@@ -11,9 +11,6 @@ import qualified Network.HTTP.Client as Web
 import qualified Network.HTTP.Client.TLS as Tls
 import qualified Network.HTTP.Types as Web
 
-baseUrl :: Text
-baseUrl = "https://api.bitfinex.com/v2"
-
 catchWeb ::
   (MonadIO m) =>
   IO (Either Error a) ->
@@ -25,6 +22,7 @@ catchWeb this =
 
 pub ::
   ( MonadIO m,
+    ToBaseUrl method,
     ToPathPieces rpc,
     ToRequestMethod method,
     FromRpc method req res,
@@ -41,7 +39,7 @@ pub rpc req qs = catchWeb $ do
     Web.parseRequest
       . T.unpack
       . T.intercalate "/"
-      $ baseUrl : toPathPiece rpc
+      $ coerce (toBaseUrl rpc) : toPathPiece rpc
   let webReq1 =
         Web.setQueryString
           (unQueryParam <$> qs)

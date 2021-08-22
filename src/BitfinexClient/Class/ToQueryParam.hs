@@ -26,6 +26,9 @@ instance ToQueryParam CurrencyPair where
 instance ToQueryParam Rational where
   toQueryParam x =
     Just . C8.pack $
+      --
+      -- TODO : what precision should be here?
+      --
       showFixed True (fromRational x :: Fixed E12)
 
 unQueryParam :: SomeQueryParam -> (BS.ByteString, Maybe BS.ByteString)

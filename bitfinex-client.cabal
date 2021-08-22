@@ -28,6 +28,7 @@ library
       BitfinexClient
       BitfinexClient.Class
       BitfinexClient.Class.FromRpc
+      BitfinexClient.Class.ToBaseUrl
       BitfinexClient.Class.ToPathPieces
       BitfinexClient.Class.ToQueryParam
       BitfinexClient.Class.ToRequestMethod

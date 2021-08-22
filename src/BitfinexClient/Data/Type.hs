@@ -7,6 +7,7 @@ module BitfinexClient.Data.Type
     PrvKey (..),
     ApiKey (..),
     RequestMethod (..),
+    BaseUrl (..),
   )
 where
 
@@ -58,3 +59,7 @@ data RequestMethod
   = GET
   | POST
   deriving (Eq, Ord, Show, Read)
+
+newtype BaseUrl
+  = BaseUrl Text
+  deriving (Eq, Ord, Show, Read, IsString)
