@@ -25,12 +25,20 @@ source-repository head
 
 library
   exposed-modules:
+      BitfinexClient
       BitfinexClient.Class
+      BitfinexClient.Class.FromRpc
+      BitfinexClient.Class.ToPathPieces
+      BitfinexClient.Class.ToQueryParam
+      BitfinexClient.Class.ToRequestMethod
       BitfinexClient.Data.AppM
       BitfinexClient.Data.Env
+      BitfinexClient.Data.Kind
+      BitfinexClient.Data.MarketAveragePrice
       BitfinexClient.Data.Type
       BitfinexClient.Import
       BitfinexClient.Import.External
+      BitfinexClient.Rpc.Generic
   other-modules:
       Paths_bitfinex_client
   hs-source-dirs:
@@ -43,9 +51,14 @@ library
       ScopedTypeVariables
       GeneralizedNewtypeDeriving
       DerivingStrategies
+      DataKinds
+      KindSignatures
+      ExistentialQuantification
+      FlexibleInstances
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
   build-depends:
-      async
+      aeson
+    , async
     , base >=4.7 && <5
     , bytestring
     , chronos
@@ -59,6 +72,9 @@ library
     , file-embed
     , hspec
     , hspec-wai
+    , http-client
+    , http-client-tls
+    , http-types
     , katip
     , lens
     , microlens
@@ -70,6 +86,7 @@ library
     , replica
     , resource-pool
     , retry
+    , safe-money
     , stm
     , template-haskell
     , text
@@ -77,6 +94,7 @@ library
     , unbounded-delays
     , universum
     , unliftio
+    , vector
     , wai
     , wai-middleware-static-embedded
     , warp
@@ -87,6 +105,7 @@ test-suite bitfinex-client-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      BitfinexClientSpec
       Paths_bitfinex_client
   hs-source-dirs:
       test
@@ -98,9 +117,14 @@ test-suite bitfinex-client-test
       ScopedTypeVariables
       GeneralizedNewtypeDeriving
       DerivingStrategies
+      DataKinds
+      KindSignatures
+      ExistentialQuantification
+      FlexibleInstances
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      async
+      aeson
+    , async
     , base >=4.7 && <5
     , bitfinex-client
     , bytestring
@@ -115,6 +139,9 @@ test-suite bitfinex-client-test
     , file-embed
     , hspec
     , hspec-wai
+    , http-client
+    , http-client-tls
+    , http-types
     , katip
     , lens
     , microlens
@@ -126,6 +153,7 @@ test-suite bitfinex-client-test
     , replica
     , resource-pool
     , retry
+    , safe-money
     , stm
     , template-haskell
     , text
@@ -133,6 +161,7 @@ test-suite bitfinex-client-test
     , unbounded-delays
     , universum
     , unliftio
+    , vector
     , wai
     , wai-middleware-static-embedded
     , warp

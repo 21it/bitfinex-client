@@ -23,14 +23,17 @@ import Control.Concurrent.STM.TChan as X
 import Control.Concurrent.Thread.Delay as X (delay)
 import Control.Monad (forever)
 import Data.Bifunctor as X (bimap, first, second)
+import Data.ByteString.Lazy as X (ByteString)
 import Data.Coerce as X (coerce)
 import Data.Either.Extra as X (fromEither)
+import Data.Fixed as X (E12, Fixed, showFixed)
 import Data.List as X (partition)
 import Data.Maybe as X (catMaybes)
 import Data.Monoid as X (All (..), mconcat)
 import Data.Pool as X (Pool, destroyAllResources)
 import Data.Ratio as X ((%), denominator, numerator)
 import Data.Text as X (strip)
+import Data.Text.Read as X (rational)
 import Data.Time.Clock as X
   ( DiffTime,
     UTCTime,
@@ -83,6 +86,12 @@ import Katip as X
     registerScribe,
     runKatipContextT,
   )
+import Money as X
+  ( ExchangeRate,
+    SomeExchangeRate,
+    mkSomeExchangeRate,
+  )
+import Network.HTTP.Client as X (HttpException (..))
 import Network.Wai as X (Middleware)
-import Universum as X hiding ((^.), atomically, on, set)
+import Universum as X hiding (ByteString, (^.), atomically, on, set)
 import UnliftIO as X (MonadUnliftIO (..), UnliftIO (..), withRunInIO)

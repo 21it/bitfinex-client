@@ -23,11 +23,17 @@ dependencies:
 # foundation
 - base >= 4.7 && < 5
 - universum
+# web
+- http-types
+- http-client
+- http-client-tls
 # time
 - time
 - chronos
 - unbounded-delays
 - retry
+# money
+- safe-money
 # storage
 - persistent
 - persistent-postgresql
@@ -52,6 +58,7 @@ dependencies:
 # bytes and text
 - bytestring
 - text
+- aeson
 # threads
 - async
 - stm
@@ -60,6 +67,7 @@ dependencies:
 - template-haskell
 - file-embed
 # other
+- vector
 - unliftio
 - containers
 - envparse
@@ -75,6 +83,10 @@ library:
   - ScopedTypeVariables
   - GeneralizedNewtypeDeriving
   - DerivingStrategies
+  - DataKinds
+  - KindSignatures
+  - ExistentialQuantification
+  - FlexibleInstances
   ghc-options:
   # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
   # Enable all warnings with -Weverything, then disable the ones we don’t care about
@@ -104,6 +116,10 @@ tests:
     - ScopedTypeVariables
     - GeneralizedNewtypeDeriving
     - DerivingStrategies
+    - DataKinds
+    - KindSignatures
+    - ExistentialQuantification
+    - FlexibleInstances
     ghc-options:
     # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
     # Enable all warnings with -Weverything, then disable the ones we don’t care about

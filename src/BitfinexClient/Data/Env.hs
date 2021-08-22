@@ -8,9 +8,9 @@ module BitfinexClient.Data.Env
   )
 where
 
-import Env ((<=<), auto, header, help, keep, nonempty, parse, str, var)
 import BitfinexClient.Data.Type
 import BitfinexClient.Import.External
+import Env ((<=<), auto, header, help, keep, nonempty, parse, str, var)
 
 data Env
   = Env
@@ -21,8 +21,7 @@ data Env
         envKatipCTX :: LogContexts,
         envKatipLE :: LogEnv,
         -- app
-        envMsgAlert :: TChan (),
-        envMsgHistory :: TVar [Message]
+        envMsgAlert :: TChan ()
       }
 
 data RawConfig
@@ -52,7 +51,6 @@ newEnv !rc = do
   ctx <- getKatipContext
   ns <- getKatipNamespace
   ma <- liftIO $ atomically newBroadcastTChan
-  mh <- liftIO $ atomically $ newTVar []
   return $
     Env
       { -- general
@@ -62,6 +60,5 @@ newEnv !rc = do
         envKatipCTX = ctx,
         envKatipNS = ns,
         -- app
-        envMsgAlert = ma,
-        envMsgHistory = mh
+        envMsgAlert = ma
       }
