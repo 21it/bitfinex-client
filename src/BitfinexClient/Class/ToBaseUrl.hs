@@ -12,5 +12,8 @@ class ToBaseUrl (method :: Method) where
 instance ToBaseUrl 'MarketAveragePrice where
   toBaseUrl Rpc = prv
 
+instance ToBaseUrl 'SubmitOrder where
+  toBaseUrl Rpc = prv
+
 prv :: BaseUrl
 prv = "https://api.bitfinex.com/v2"

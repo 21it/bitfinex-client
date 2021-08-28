@@ -4,9 +4,12 @@ module BitfinexClient.Data.Kind
   )
 where
 
+import BitfinexClient.Import.External
+
 data Method
   = MarketAveragePrice
-  | OrderTest
+  | SubmitOrder
+  deriving (Show)
 
 data CurrencyRelation
   = Base

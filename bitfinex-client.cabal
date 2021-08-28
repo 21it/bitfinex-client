@@ -36,10 +36,12 @@ library
       BitfinexClient.Data.Env
       BitfinexClient.Data.Kind
       BitfinexClient.Data.MarketAveragePrice
+      BitfinexClient.Data.SubmitOrder
       BitfinexClient.Data.Type
       BitfinexClient.Import
       BitfinexClient.Import.External
       BitfinexClient.Rpc.Generic
+      BitfinexClient.Util
   other-modules:
       Paths_bitfinex_client
   hs-source-dirs:
@@ -78,6 +80,7 @@ library
     , http-types
     , katip
     , lens
+    , lens-aeson
     , microlens
     , monad-logger
     , persistent
@@ -145,6 +148,7 @@ test-suite bitfinex-client-test
     , http-types
     , katip
     , lens
+    , lens-aeson
     , microlens
     , monad-logger
     , persistent

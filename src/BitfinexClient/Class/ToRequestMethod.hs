@@ -11,3 +11,6 @@ class ToRequestMethod (method :: Method) where
 
 instance ToRequestMethod 'MarketAveragePrice where
   toRequestMethod Rpc = POST
+
+instance ToRequestMethod 'SubmitOrder where
+  toRequestMethod Rpc = POST

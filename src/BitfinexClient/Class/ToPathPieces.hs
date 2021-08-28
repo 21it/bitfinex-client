@@ -12,3 +12,6 @@ class ToPathPieces a where
 
 instance ToPathPieces (Rpc 'MarketAveragePrice) where
   toPathPiece Rpc = ["calc", "trade", "avg"]
+
+instance ToPathPieces (Rpc 'SubmitOrder) where
+  toPathPiece Rpc = ["auth", "w", "order", "submit"]

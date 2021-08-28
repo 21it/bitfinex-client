@@ -59,6 +59,7 @@ dependencies:
 - bytestring
 - text
 - aeson
+- lens-aeson
 # threads
 - async
 - stm

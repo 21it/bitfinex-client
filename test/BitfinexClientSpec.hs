@@ -11,9 +11,10 @@ spec :: Spec
 spec = do
   it "MarketAveragePrice succeeds" $ do
     x <- runExceptT $ Bitfinex.marketAveragePrice (CurrencyPair "ADA" "BTC") 1
-    print x
     x `shouldSatisfy` isRight
-  it "MarketAveragePrice fails" $ do
+  it "MarketAveragePrice reversed fails" $ do
+    x <- runExceptT $ Bitfinex.marketAveragePrice (CurrencyPair "BTC" "ADA") 1
+    x `shouldSatisfy` isLeft
+  it "MarketAveragePrice identity fails" $ do
     x <- runExceptT $ Bitfinex.marketAveragePrice (CurrencyPair "BTC" "BTC") 1
-    print x
     x `shouldSatisfy` isLeft
