@@ -60,6 +60,7 @@ dependencies:
 - text
 - aeson
 - lens-aeson
+- memory
 # threads
 - async
 - stm
@@ -68,6 +69,7 @@ dependencies:
 - template-haskell
 - file-embed
 # other
+- cryptonite
 - vector
 - unliftio
 - containers

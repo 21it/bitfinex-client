@@ -32,7 +32,6 @@ library
       BitfinexClient.Class.ToPathPieces
       BitfinexClient.Class.ToQueryParam
       BitfinexClient.Class.ToRequestMethod
-      BitfinexClient.Data.AppM
       BitfinexClient.Data.Env
       BitfinexClient.Data.Kind
       BitfinexClient.Data.MarketAveragePrice
@@ -69,6 +68,7 @@ library
     , concur-core
     , concur-replica
     , containers
+    , cryptonite
     , envparse
     , esqueleto
     , extra
@@ -81,6 +81,7 @@ library
     , katip
     , lens
     , lens-aeson
+    , memory
     , microlens
     , monad-logger
     , persistent
@@ -137,6 +138,7 @@ test-suite bitfinex-client-test
     , concur-core
     , concur-replica
     , containers
+    , cryptonite
     , envparse
     , esqueleto
     , extra
@@ -149,6 +151,7 @@ test-suite bitfinex-client-test
     , katip
     , lens
     , lens-aeson
+    , memory
     , microlens
     , monad-logger
     , persistent

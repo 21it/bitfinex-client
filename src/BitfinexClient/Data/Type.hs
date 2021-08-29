@@ -11,6 +11,7 @@ module BitfinexClient.Data.Type
     OrderId (..),
     Order (..),
     RawResponse (..),
+    Nonce (..),
   )
 where
 
@@ -36,7 +37,7 @@ data CurrencyPair
       { currencyPairBase :: CurrencyCode 'Base,
         currencyPairQuote :: CurrencyCode 'Quote
       }
-  deriving (Eq, Ord, Show, Read)
+  deriving (Eq, Ord, Show)
 
 data Rpc (method :: Method)
   = Rpc
@@ -48,15 +49,15 @@ data Error
   deriving (Show)
 
 newtype PrvKey
-  = PrvKey Text
-  deriving (Eq, Ord, Read, IsString)
+  = PrvKey BS.ByteString
+  deriving newtype (Eq, Ord, IsString)
 
 instance Prelude.Show PrvKey where
   show = const "SECRET"
 
 newtype ApiKey
-  = ApiKey Text
-  deriving (Eq, Ord, Read, IsString)
+  = ApiKey BS.ByteString
+  deriving newtype (Eq, Ord, IsString)
 
 instance Prelude.Show ApiKey where
   show = const "SECRET"
@@ -64,15 +65,15 @@ instance Prelude.Show ApiKey where
 data RequestMethod
   = GET
   | POST
-  deriving (Eq, Ord, Show, Read)
+  deriving (Eq, Ord, Show)
 
 newtype BaseUrl
   = BaseUrl Text
-  deriving (Eq, Ord, Show, Read, IsString)
+  deriving newtype (Eq, Ord, Show, IsString)
 
 newtype OrderId
   = OrderId Integer
-  deriving (Eq, Ord, Show, Read)
+  deriving newtype (Eq, Ord, Show)
 
 data Order
   = Order
@@ -84,7 +85,7 @@ data Order
 
 newtype RawResponse
   = RawResponse ByteString
-  deriving (Eq, Ord)
+  deriving newtype (Eq, Ord)
 
 instance Show RawResponse where
   show x =
@@ -93,3 +94,7 @@ instance Show RawResponse where
       Right res -> "Text RawResponse " <> T.unpack res
     where
       bs = BL.toStrict $ coerce x
+
+newtype Nonce
+  = Nonce Integer
+  deriving newtype (Eq, Ord, Show)

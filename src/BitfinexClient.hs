@@ -27,12 +27,14 @@ marketAveragePrice symbol amount =
 
 submitOrder ::
   MonadIO m =>
+  Env ->
   SomeExchangeRate ->
   Rational ->
   ExceptT Error m Order
-submitOrder rate amount =
+submitOrder env rate amount =
   GenericRpc.prv
     (Rpc :: Rpc 'SubmitOrder)
+    env
     SubmitOrder.Request
       { SubmitOrder.rate = rate,
         SubmitOrder.amount = amount

@@ -12,7 +12,9 @@ in
   vimBackground ? "light",
   vimColorScheme ? "PaperColor",
   gitAuthorName,
-  gitAuthorEmail
+  gitAuthorEmail,
+  bitfinexApiKey ? "TODO",
+  bitfinexPrvKey ? "TODO",
 }:
 with pkgs;
 
@@ -44,6 +46,8 @@ stdenv.mkDerivation {
   GIT_AUTHOR_NAME=gitAuthorName;
   GIT_AUTHOR_EMAIL=gitAuthorEmail;
   EMAIL = gitAuthorEmail;
+  BITFINEX_API_KEY=bitfinexApiKey;
+  BITFINEX_PRV_KEY=bitfinexPrvKey;
   shellHook = ''
     source ./nix/export-test-envs.sh
     sh ./nix/spawn-test-deps.sh

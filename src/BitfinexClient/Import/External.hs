@@ -40,6 +40,7 @@ import Data.Time.Clock as X
     UTCTime,
     addUTCTime,
     diffTimeToPicoseconds,
+    diffUTCTime,
     getCurrentTime,
     secondsToDiffTime,
   )
