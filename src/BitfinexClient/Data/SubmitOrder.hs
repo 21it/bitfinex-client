@@ -17,14 +17,14 @@ data Request
 instance ToJSON Request where
   toJSON x =
     A.object
-      [ "symbol"
-          A..= ( toBodyParam $
-                   someExchangeRateCurrencyPair rate0
-               ),
+      [ "type"
+          A..= ("LIMIT" :: Text),
+        "symbol"
+          A..= toBodyParam (someExchangeRateCurrencyPair rate0),
         "price"
-          A..= ( toBodyParam $
-                   someExchangeRateRate rate0
-               )
+          A..= toBodyParam (someExchangeRateRate rate0),
+        "amount"
+          A..= toBodyParam (amount x)
       ]
     where
       rate0 = rate x

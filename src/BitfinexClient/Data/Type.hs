@@ -44,7 +44,8 @@ data Rpc (method :: Method)
 
 data Error
   = ErrorWebException HttpException
-  | ErrorWebResponse Web.Request (Web.Response ByteString)
+  | ErrorWebPub Web.Request (Web.Response ByteString)
+  | ErrorWebPrv ByteString Web.Request (Web.Response ByteString)
   | ErrorFromRpc Text
   deriving (Show)
 

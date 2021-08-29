@@ -16,4 +16,4 @@ instance ToBaseUrl 'SubmitOrder where
   toBaseUrl Rpc = prv
 
 prv :: BaseUrl
-prv = "https://api.bitfinex.com/v2"
+prv = "https://api.bitfinex.com"

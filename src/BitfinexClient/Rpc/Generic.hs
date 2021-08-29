@@ -13,6 +13,7 @@ import qualified Crypto.MAC.HMAC as Crypto (hmac, hmacGetDigest)
 import qualified Data.Aeson as A
 import qualified Data.ByteArray as BA
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Base16 as B16
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Text as T
 import qualified Network.HTTP.Client as Web
@@ -60,7 +61,7 @@ pub rpc req qs = catchWeb $ do
   pure $
     if Web.responseStatus webRes == Web.ok200
       then fromRpc rpc req . RawResponse $ Web.responseBody webRes
-      else Left $ ErrorWebResponse webReq1 webRes
+      else Left $ ErrorWebPub webReq1 webRes
 
 prv ::
   ( MonadIO m,
@@ -101,7 +102,8 @@ prv rpc env req = catchWeb $ do
                   coerce $ envApiKey env
                 ),
                 ( "bfx-signature",
-                  BS.pack
+                  B16.encode
+                    . BS.pack
                     . BA.unpack
                     $ sign (envPrvKey env) apiPath nonce reqBody
                 )
@@ -112,7 +114,7 @@ prv rpc env req = catchWeb $ do
   pure $
     if Web.responseStatus webRes == Web.ok200
       then fromRpc rpc req . RawResponse $ Web.responseBody webRes
-      else Left $ ErrorWebResponse webReq1 webRes
+      else Left $ ErrorWebPrv reqBody webReq1 webRes
 
 sign ::
   PrvKey ->

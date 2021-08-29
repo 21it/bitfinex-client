@@ -57,6 +57,7 @@ dependencies:
 - microlens
 # bytes and text
 - bytestring
+- base16-bytestring
 - text
 - aeson
 - lens-aeson

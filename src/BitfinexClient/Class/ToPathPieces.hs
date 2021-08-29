@@ -11,7 +11,7 @@ class ToPathPieces a where
   toPathPiece :: a -> [Text]
 
 instance ToPathPieces (Rpc 'MarketAveragePrice) where
-  toPathPiece Rpc = ["calc", "trade", "avg"]
+  toPathPiece Rpc = ["v2", "calc", "trade", "avg"]
 
 instance ToPathPieces (Rpc 'SubmitOrder) where
-  toPathPiece Rpc = ["auth", "w", "order", "submit"]
+  toPathPiece Rpc = ["v2", "auth", "w", "order", "submit"]
