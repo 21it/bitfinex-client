@@ -21,5 +21,8 @@ spec = before newEnv $ do
   it "SubmitOrder succeeds" $ \env -> do
     x <- runExceptT $ do
       rate <- Bitfinex.marketAveragePrice (CurrencyPair "ADA" "BTC") 1
-      Bitfinex.submitOrder env rate 1
+      Bitfinex.submitOrder env rate 2
+    x `shouldSatisfy` isRight
+  it "FeeSummary succeeds" $ \env -> do
+    x <- runExceptT $ Bitfinex.feeSummary env
     x `shouldSatisfy` isRight

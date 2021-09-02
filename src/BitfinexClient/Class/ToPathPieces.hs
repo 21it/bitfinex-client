@@ -15,3 +15,6 @@ instance ToPathPieces (Rpc 'MarketAveragePrice) where
 
 instance ToPathPieces (Rpc 'SubmitOrder) where
   toPathPiece Rpc = ["v2", "auth", "w", "order", "submit"]
+
+instance ToPathPieces (Rpc 'FeeSummary) where
+  toPathPiece Rpc = ["v2", "auth", "r", "summary"]

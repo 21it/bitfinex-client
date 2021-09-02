@@ -33,6 +33,7 @@ library
       BitfinexClient.Class.ToQueryParam
       BitfinexClient.Class.ToRequestMethod
       BitfinexClient.Data.Env
+      BitfinexClient.Data.FeeSummary
       BitfinexClient.Data.Kind
       BitfinexClient.Data.MarketAveragePrice
       BitfinexClient.Data.SubmitOrder

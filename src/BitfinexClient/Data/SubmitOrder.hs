@@ -18,7 +18,7 @@ instance ToJSON Request where
   toJSON x =
     A.object
       [ "type"
-          A..= ("LIMIT" :: Text),
+          A..= ("EXCHANGE LIMIT" :: Text),
         "symbol"
           A..= toBodyParam (someExchangeRateCurrencyPair rate0),
         "price"

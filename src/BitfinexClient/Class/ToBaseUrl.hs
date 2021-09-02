@@ -15,5 +15,8 @@ instance ToBaseUrl 'MarketAveragePrice where
 instance ToBaseUrl 'SubmitOrder where
   toBaseUrl Rpc = prv
 
+instance ToBaseUrl 'FeeSummary where
+  toBaseUrl Rpc = prv
+
 prv :: BaseUrl
 prv = "https://api.bitfinex.com"

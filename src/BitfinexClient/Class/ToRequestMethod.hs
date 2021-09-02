@@ -14,3 +14,6 @@ instance ToRequestMethod 'MarketAveragePrice where
 
 instance ToRequestMethod 'SubmitOrder where
   toRequestMethod Rpc = POST
+
+instance ToRequestMethod 'FeeSummary where
+  toRequestMethod Rpc = POST

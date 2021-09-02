@@ -1,9 +1,11 @@
 module BitfinexClient
   ( marketAveragePrice,
     submitOrder,
+    feeSummary,
   )
 where
 
+import qualified BitfinexClient.Data.FeeSummary as FeeSummary
 import qualified BitfinexClient.Data.MarketAveragePrice as MarketAveragePrice
 import qualified BitfinexClient.Data.SubmitOrder as SubmitOrder
 import BitfinexClient.Import
@@ -39,3 +41,13 @@ submitOrder env rate amount =
       { SubmitOrder.rate = rate,
         SubmitOrder.amount = amount
       }
+
+feeSummary ::
+  MonadIO m =>
+  Env ->
+  ExceptT Error m FeeSummary.Response
+feeSummary env =
+  GenericRpc.prv
+    (Rpc :: Rpc 'FeeSummary)
+    env
+    (mempty :: Map Int Int)
