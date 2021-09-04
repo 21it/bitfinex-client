@@ -12,6 +12,8 @@ module BitfinexClient.Data.Type
     Order (..),
     RawResponse (..),
     Nonce (..),
+    OrderFlag (..),
+    OrderFlagAcc (..),
   )
 where
 
@@ -99,3 +101,16 @@ instance Show RawResponse where
 newtype Nonce
   = Nonce Integer
   deriving newtype (Eq, Ord, Show)
+
+data OrderFlag
+  = Hidden
+  | Close
+  | ReduceOnly
+  | PostOnly
+  | Oco
+  | NoVarRates
+  deriving (Eq, Ord, Show)
+
+newtype OrderFlagAcc
+  = OrderFlagAcc Integer
+  deriving newtype (Eq, Ord, Show, Num, ToJSON)

@@ -10,7 +10,8 @@ import Data.Aeson.Lens
 data Request
   = Request
       { rate :: SomeExchangeRate,
-        amount :: Rational
+        amount :: Rational,
+        flags :: Set OrderFlag
       }
   deriving (Eq, Ord, Show)
 
@@ -24,13 +25,18 @@ instance ToJSON Request where
         "price"
           A..= toBodyParam (someExchangeRateRate rate0),
         "amount"
-          A..= toBodyParam (amount x)
+          A..= toBodyParam (amount x),
+        "flags"
+          A..= unOrderFlagSet (flags x)
       ]
     where
       rate0 = rate x
 
 instance FromRpc 'SubmitOrder Request Order where
   fromRpc Rpc req res@(RawResponse raw) = do
+    --
+    -- TODO : decode status and other details
+    --
     id0 <-
       maybeToRight
         (fromRpcError SubmitOrder res "OrderId is missing")

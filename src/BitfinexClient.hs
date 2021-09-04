@@ -32,14 +32,16 @@ submitOrder ::
   Env ->
   SomeExchangeRate ->
   Rational ->
+  Set OrderFlag ->
   ExceptT Error m Order
-submitOrder env rate amount =
+submitOrder env rate amount flags =
   GenericRpc.prv
     (Rpc :: Rpc 'SubmitOrder)
     env
     SubmitOrder.Request
       { SubmitOrder.rate = rate,
-        SubmitOrder.amount = amount
+        SubmitOrder.amount = amount,
+        SubmitOrder.flags = flags
       }
 
 feeSummary ::

@@ -84,6 +84,7 @@ library:
   - MultiParamTypeClasses
   - LambdaCase
   - OverloadedStrings
+  - OverloadedLists
   - ScopedTypeVariables
   - GeneralizedNewtypeDeriving
   - DerivingStrategies
@@ -117,6 +118,7 @@ tests:
     - MultiParamTypeClasses
     - LambdaCase
     - OverloadedStrings
+    - OverloadedLists
     - ScopedTypeVariables
     - GeneralizedNewtypeDeriving
     - DerivingStrategies

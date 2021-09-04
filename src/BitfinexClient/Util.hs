@@ -2,6 +2,8 @@ module BitfinexClient.Util
   ( someExchangeRateCurrencyPair,
     fromRpcError,
     newNonce,
+    unOrderFlag,
+    unOrderFlagSet,
   )
 where
 
@@ -40,3 +42,18 @@ utcTimeToMicros x =
 
 epoch :: UTCTime
 epoch = posixSecondsToUTCTime 0
+
+unOrderFlag :: OrderFlag -> OrderFlagAcc
+unOrderFlag = OrderFlagAcc . \case
+  Hidden -> 64
+  Close -> 512
+  ReduceOnly -> 1024
+  PostOnly -> 4096
+  Oco -> 16384
+  NoVarRates -> 524288
+
+unOrderFlagSet :: Set OrderFlag -> OrderFlagAcc
+unOrderFlagSet =
+  foldr
+    (\x acc -> acc + unOrderFlag x)
+    $ OrderFlagAcc 0

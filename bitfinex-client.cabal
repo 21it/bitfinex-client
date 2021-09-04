@@ -51,6 +51,7 @@ library
       MultiParamTypeClasses
       LambdaCase
       OverloadedStrings
+      OverloadedLists
       ScopedTypeVariables
       GeneralizedNewtypeDeriving
       DerivingStrategies
@@ -121,6 +122,7 @@ test-suite bitfinex-client-test
       MultiParamTypeClasses
       LambdaCase
       OverloadedStrings
+      OverloadedLists
       ScopedTypeVariables
       GeneralizedNewtypeDeriving
       DerivingStrategies

@@ -18,10 +18,15 @@ spec = before newEnv $ do
   it "MarketAveragePrice identity fails" . const $ do
     x <- runExceptT $ Bitfinex.marketAveragePrice (CurrencyPair "BTC" "BTC") 1
     x `shouldSatisfy` isLeft
+  it "unOrderFlagSet works" . const $
+    unOrderFlagSet [Hidden, PostOnly]
+      `shouldBe` OrderFlagAcc 4160
   it "SubmitOrder succeeds" $ \env -> do
     x <- runExceptT $ do
       rate <- Bitfinex.marketAveragePrice (CurrencyPair "ADA" "BTC") 1
-      Bitfinex.submitOrder env rate 2
+      print rate
+      Bitfinex.submitOrder env rate 2 [PostOnly]
+    print x
     x `shouldSatisfy` isRight
   it "FeeSummary succeeds" $ \env -> do
     x <- runExceptT $ Bitfinex.feeSummary env
