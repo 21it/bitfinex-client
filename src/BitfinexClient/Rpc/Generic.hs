@@ -1,4 +1,5 @@
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE TypeApplications #-}
 
 module BitfinexClient.Rpc.Generic
   ( pub,
@@ -6,6 +7,7 @@ module BitfinexClient.Rpc.Generic
   )
 where
 
+import BitfinexClient.Class.ToPathPieces
 import BitfinexClient.Import
 import qualified Crypto.Hash as Crypto (Digest)
 import qualified Crypto.Hash.Algorithms as Crypto (SHA384)
@@ -33,6 +35,7 @@ catchWeb this =
       `catch` (\(x :: HttpException) -> pure . Left $ ErrorWebException x)
 
 pub ::
+  forall m method req res rpc.
   ( MonadIO m,
     ToBaseUrl method,
     ToPathPieces method req,
@@ -51,7 +54,7 @@ pub rpc qs req = catchWeb $ do
     Web.parseRequest
       . T.unpack
       . T.intercalate "/"
-      $ coerce (toBaseUrl rpc) : toPathPieces rpc req
+      $ coerce (toBaseUrl rpc) : toPathPieces @method req
   let webReq1 =
         Web.setQueryString
           (unQueryParam <$> qs)
@@ -64,6 +67,7 @@ pub rpc qs req = catchWeb $ do
       else Left $ ErrorWebPub webReq1 webRes
 
 prv ::
+  forall m method req res rpc.
   ( MonadIO m,
     ToBaseUrl method,
     ToPathPieces method req,
@@ -80,7 +84,7 @@ prv rpc env req = catchWeb $ do
   manager <-
     Web.newManager Tls.tlsManagerSettings
   let apiPath =
-        T.intercalate "/" $ toPathPieces rpc req
+        T.intercalate "/" $ toPathPieces @method req
   nonce <- encodeUtf8 <$> (show <$> newNonce :: IO Text)
   let reqBody = A.encode req
   webReq0 <-
