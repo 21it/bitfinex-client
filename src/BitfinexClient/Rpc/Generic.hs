@@ -41,10 +41,10 @@ pub ::
     rpc ~ Rpc method
   ) =>
   rpc ->
-  req ->
   [SomeQueryParam] ->
+  req ->
   ExceptT Error m res
-pub rpc req qs = catchWeb $ do
+pub rpc qs req = catchWeb $ do
   manager <-
     Web.newManager Tls.tlsManagerSettings
   webReq0 <-

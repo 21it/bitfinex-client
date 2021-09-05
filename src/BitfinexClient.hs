@@ -1,11 +1,13 @@
 module BitfinexClient
   ( marketAveragePrice,
-    submitOrder,
     feeSummary,
+    submitOrder,
+    retrieveOrders,
   )
 where
 
 import qualified BitfinexClient.Data.FeeSummary as FeeSummary
+import qualified BitfinexClient.Data.GetOrders as GetOrders
 import qualified BitfinexClient.Data.MarketAveragePrice as MarketAveragePrice
 import qualified BitfinexClient.Data.SubmitOrder as SubmitOrder
 import BitfinexClient.Import
@@ -19,13 +21,23 @@ marketAveragePrice ::
 marketAveragePrice symbol amount =
   GenericRpc.pub
     (Rpc :: Rpc 'MarketAveragePrice)
+    [ SomeQueryParam "symbol" symbol,
+      SomeQueryParam "amount" amount
+    ]
     MarketAveragePrice.Request
       { MarketAveragePrice.symbol = symbol,
         MarketAveragePrice.amount = amount
       }
-    [ SomeQueryParam "symbol" symbol,
-      SomeQueryParam "amount" amount
-    ]
+
+feeSummary ::
+  MonadIO m =>
+  Env ->
+  ExceptT Error m FeeSummary.Response
+feeSummary env =
+  GenericRpc.prv
+    (Rpc :: Rpc 'FeeSummary)
+    env
+    (mempty :: Map Int Int)
 
 submitOrder ::
   MonadIO m =>
@@ -44,12 +56,17 @@ submitOrder env rate amount flags =
         SubmitOrder.flags = flags
       }
 
-feeSummary ::
+retrieveOrders ::
   MonadIO m =>
   Env ->
-  ExceptT Error m FeeSummary.Response
-feeSummary env =
+  CurrencyPair ->
+  Set OrderId ->
+  ExceptT Error m (Set Order)
+retrieveOrders env pair ids =
   GenericRpc.prv
-    (Rpc :: Rpc 'FeeSummary)
+    (Rpc :: Rpc 'RetrieveOrders)
     env
-    (mempty :: Map Int Int)
+    GetOrders.Request
+      { GetOrders.currencyPair = pair,
+        GetOrders.orderIds = ids
+      }

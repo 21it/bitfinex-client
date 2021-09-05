@@ -23,7 +23,7 @@ import Control.Concurrent.STM.TChan as X
 import Control.Concurrent.Thread.Delay as X (delay)
 import Control.Monad (forever)
 import Control.Monad.Trans.Except as X (except)
-import Data.Aeson as X (ToJSON (..))
+import Data.Aeson as X (FromJSON (..), ToJSON (..))
 import Data.Bifunctor as X (bimap, first, second)
 import Data.ByteString.Lazy as X (ByteString)
 import Data.Coerce as X (coerce)

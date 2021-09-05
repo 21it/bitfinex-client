@@ -8,6 +8,7 @@ module BitfinexClient.Data.Money
     exchangeRatePair,
     exchangeRatePrice,
     newExchangeRate,
+    newExchangeRate',
     tweakExchangeRate,
   )
 where
@@ -64,6 +65,13 @@ newExchangeRate ::
   Either Error ExchangeRate
 newExchangeRate base quote rat = do
   pair <- newCurrencyPair base quote
+  newExchangeRate' pair rat
+
+newExchangeRate' ::
+  CurrencyPair ->
+  Rational ->
+  Either Error ExchangeRate
+newExchangeRate' pair rat = do
   posRat <- newPosRat rat
   Right $ ExchangeRate pair posRat
 

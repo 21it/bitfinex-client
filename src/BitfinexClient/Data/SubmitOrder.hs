@@ -35,9 +35,6 @@ instance ToJSON Request where
 
 instance FromRpc 'SubmitOrder Request Order where
   fromRpc Rpc req res@(RawResponse raw) = do
-    --
-    -- TODO : decode status and other details
-    --
     id0 <-
       maybeToRight
         (fromRpcError SubmitOrder res "OrderId is missing")

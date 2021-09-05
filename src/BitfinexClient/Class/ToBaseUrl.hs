@@ -15,6 +15,9 @@ instance ToBaseUrl 'MarketAveragePrice where
 instance ToBaseUrl 'SubmitOrder where
   toBaseUrl Rpc = prv
 
+instance ToBaseUrl 'RetrieveOrders where
+  toBaseUrl Rpc = prv
+
 instance ToBaseUrl 'FeeSummary where
   toBaseUrl Rpc = prv
 

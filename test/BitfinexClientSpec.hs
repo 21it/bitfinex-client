@@ -30,7 +30,7 @@ spec = before newEnv $ do
     let amt = 2
     x <- runExceptT $ do
       pair <- except $ newCurrencyPair "ADA" "BTC"
-      tweak <- except . newPosRat $ 995 % 1000
+      tweak <- except . newPosRat $ 999 % 1000
       rate <-
         tweakExchangeRate (* tweak)
           <$> Bitfinex.marketAveragePrice pair amt

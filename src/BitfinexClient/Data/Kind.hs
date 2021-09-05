@@ -9,6 +9,7 @@ import BitfinexClient.Import.External
 data Method
   = MarketAveragePrice
   | SubmitOrder
+  | RetrieveOrders
   | FeeSummary
   deriving (Show)
 

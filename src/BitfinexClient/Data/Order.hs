@@ -26,7 +26,7 @@ data Order
 
 newtype OrderId
   = OrderId Integer
-  deriving newtype (Eq, Ord, Show)
+  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON)
 
 data OrderFlag
   = Hidden
