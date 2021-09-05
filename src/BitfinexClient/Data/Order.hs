@@ -11,7 +11,6 @@ module BitfinexClient.Data.Order
 where
 
 import BitfinexClient.Data.Money
-import BitfinexClient.Data.Type
 import BitfinexClient.Import.External
 import qualified Data.Text as T
 
@@ -60,17 +59,19 @@ data OrderStatus
   | PartiallyFilled
   | InsufficientMargin
   | Canceled
+  | PostOnlyCanceled
   | RsnDust
   | RsnPause
   deriving (Eq, Ord, Show)
 
-newOrderStatus :: Text -> Either Error OrderStatus
+newOrderStatus :: Text -> Either Text OrderStatus
 newOrderStatus = \case
   "ACTIVE" -> Right Active
   x | "EXECUTED" `T.isPrefixOf` x -> Right Executed
   x | "PARTIALLY FILLED" `T.isPrefixOf` x -> Right PartiallyFilled
   x | "INSUFFICIENT MARGIN" `T.isPrefixOf` x -> Right InsufficientMargin
   "CANCELED" -> Right Canceled
+  "POSTONLY CANCELED" -> Right PostOnlyCanceled
   "RSN_DUST" -> Right RsnDust
   "RSN_PAUSE" -> Right RsnPause
-  x -> Left . ErrorSmartCon $ "OrderStatus is not recognized " <> x
+  _ -> Left "OrderStatus is not recognized"

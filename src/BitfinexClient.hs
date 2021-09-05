@@ -3,6 +3,7 @@ module BitfinexClient
     feeSummary,
     submitOrder,
     retrieveOrders,
+    ordersHistory,
   )
 where
 
@@ -65,6 +66,21 @@ retrieveOrders ::
 retrieveOrders env pair ids =
   GenericRpc.prv
     (Rpc :: Rpc 'RetrieveOrders)
+    env
+    GetOrders.Request
+      { GetOrders.currencyPair = pair,
+        GetOrders.orderIds = ids
+      }
+
+ordersHistory ::
+  MonadIO m =>
+  Env ->
+  CurrencyPair ->
+  Set OrderId ->
+  ExceptT Error m (Set Order)
+ordersHistory env pair ids =
+  GenericRpc.prv
+    (Rpc :: Rpc 'OrdersHistory)
     env
     GetOrders.Request
       { GetOrders.currencyPair = pair,

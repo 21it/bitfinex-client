@@ -12,13 +12,16 @@ class ToBaseUrl (method :: Method) where
 instance ToBaseUrl 'MarketAveragePrice where
   toBaseUrl Rpc = prv
 
+instance ToBaseUrl 'FeeSummary where
+  toBaseUrl Rpc = prv
+
 instance ToBaseUrl 'SubmitOrder where
   toBaseUrl Rpc = prv
 
 instance ToBaseUrl 'RetrieveOrders where
   toBaseUrl Rpc = prv
 
-instance ToBaseUrl 'FeeSummary where
+instance ToBaseUrl 'OrdersHistory where
   toBaseUrl Rpc = prv
 
 prv :: BaseUrl

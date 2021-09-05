@@ -26,6 +26,9 @@ spec = before newEnv $ do
   it "unOrderFlagSet works" . const $
     unOrderFlagSet [Hidden, PostOnly]
       `shouldBe` OrderFlagAcc 4160
+  it "FeeSummary succeeds" $ \env -> do
+    x <- runExceptT $ Bitfinex.feeSummary env
+    x `shouldSatisfy` isRight
   it "SubmitOrder succeeds" $ \env -> do
     let amt = 2
     x <- runExceptT $ do
@@ -37,6 +40,8 @@ spec = before newEnv $ do
       Bitfinex.submitOrder env rate amt [PostOnly]
     print x
     x `shouldSatisfy` isRight
-  it "FeeSummary succeeds" $ \env -> do
-    x <- runExceptT $ Bitfinex.feeSummary env
+  it "OrdersHistory succeeds" $ \env -> do
+    x <- runExceptT $ do
+      pair <- except $ newCurrencyPair "ADA" "BTC"
+      Bitfinex.ordersHistory env pair []
     x `shouldSatisfy` isRight

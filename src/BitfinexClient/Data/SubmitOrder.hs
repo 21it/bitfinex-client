@@ -37,14 +37,15 @@ instance FromRpc 'SubmitOrder Request Order where
   fromRpc Rpc req res@(RawResponse raw) = do
     id0 <-
       maybeToRight
-        (fromRpcError SubmitOrder res "OrderId is missing")
+        (failure "OrderId is missing")
         $ raw ^? nth 4 . nth 0 . nth 0 . _Integer
     ss0 <-
       maybeToRight
-        (fromRpcError SubmitOrder res "OrderStatus is missing")
+        (failure "OrderStatus is missing")
         $ raw ^? nth 4 . nth 0 . nth 13 . _String
     ss1 <-
-      newOrderStatus ss0
+      first failure $
+        newOrderStatus ss0
     pure
       Order
         { orderId = OrderId id0,
@@ -52,3 +53,6 @@ instance FromRpc 'SubmitOrder Request Order where
           orderAmount = amount req,
           orderStatus = ss1
         }
+    where
+      failure =
+        fromRpcError SubmitOrder res
