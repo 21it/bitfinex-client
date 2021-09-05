@@ -3,8 +3,13 @@ module BitfinexClient.Data.GetOrders
   )
 where
 
+import BitfinexClient.Class.FromRpc
+import BitfinexClient.Data.Kind
+import BitfinexClient.Data.Money
 import BitfinexClient.Data.Order
-import BitfinexClient.Import
+import BitfinexClient.Data.Type
+import BitfinexClient.Import.External
+import BitfinexClient.Util
 import qualified Data.Aeson as A
 import Data.Aeson.Lens
 import qualified Data.Set as Set

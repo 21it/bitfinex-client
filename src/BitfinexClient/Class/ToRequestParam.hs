@@ -1,5 +1,5 @@
-module BitfinexClient.Class.ToQueryParam
-  ( ToQueryParam (..),
+module BitfinexClient.Class.ToRequestParam
+  ( ToRequestParam (..),
     SomeQueryParam (..),
     unQueryParam,
   )
@@ -12,15 +12,15 @@ import qualified Data.Text as T
 --
 -- TODO : rename ToRequestParam
 --
-class ToQueryParam a where
+class ToRequestParam a where
   toBodyParam :: a -> Text
   toQueryParam :: a -> Maybe BS.ByteString
   toQueryParam = Just . encodeUtf8 . toBodyParam
 
 data SomeQueryParam
-  = forall a. ToQueryParam a => SomeQueryParam BS.ByteString a
+  = forall a. ToRequestParam a => SomeQueryParam BS.ByteString a
 
-instance ToQueryParam Rational where
+instance ToRequestParam Rational where
   toBodyParam x =
     T.pack $ showFixed True (fromRational x :: Fixed E12)
 

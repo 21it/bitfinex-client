@@ -35,7 +35,7 @@ catchWeb this =
 pub ::
   ( MonadIO m,
     ToBaseUrl method,
-    ToPathPieces rpc,
+    ToPathPieces method req,
     ToRequestMethod method,
     FromRpc method req res,
     rpc ~ Rpc method
@@ -51,7 +51,7 @@ pub rpc qs req = catchWeb $ do
     Web.parseRequest
       . T.unpack
       . T.intercalate "/"
-      $ coerce (toBaseUrl rpc) : toPathPiece rpc
+      $ coerce (toBaseUrl rpc) : toPathPieces rpc req
   let webReq1 =
         Web.setQueryString
           (unQueryParam <$> qs)
@@ -66,7 +66,7 @@ pub rpc qs req = catchWeb $ do
 prv ::
   ( MonadIO m,
     ToBaseUrl method,
-    ToPathPieces rpc,
+    ToPathPieces method req,
     ToRequestMethod method,
     ToJSON req,
     FromRpc method req res,
@@ -80,7 +80,7 @@ prv rpc env req = catchWeb $ do
   manager <-
     Web.newManager Tls.tlsManagerSettings
   let apiPath =
-        T.intercalate "/" $ toPathPiece rpc
+        T.intercalate "/" $ toPathPieces rpc req
   nonce <- encodeUtf8 <$> (show <$> newNonce :: IO Text)
   let reqBody = A.encode req
   webReq0 <-

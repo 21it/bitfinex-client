@@ -14,7 +14,7 @@ module BitfinexClient.Data.Type
   )
 where
 
-import BitfinexClient.Class.ToQueryParam
+import BitfinexClient.Class.ToRequestParam
 import BitfinexClient.Data.Kind
 import BitfinexClient.Import.External
 import qualified Data.ByteString as BS
@@ -80,7 +80,7 @@ newtype Nonce
 
 newtype PosRat
   = PosRat {unPosRat :: Rational}
-  deriving newtype (Eq, Ord, Show, Num, ToQueryParam)
+  deriving newtype (Eq, Ord, Show, Num, ToRequestParam)
 
 newPosRat :: Rational -> Either Error PosRat
 newPosRat x

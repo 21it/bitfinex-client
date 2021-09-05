@@ -30,8 +30,8 @@ library
       BitfinexClient.Class.FromRpc
       BitfinexClient.Class.ToBaseUrl
       BitfinexClient.Class.ToPathPieces
-      BitfinexClient.Class.ToQueryParam
       BitfinexClient.Class.ToRequestMethod
+      BitfinexClient.Class.ToRequestParam
       BitfinexClient.Data.Env
       BitfinexClient.Data.FeeSummary
       BitfinexClient.Data.GetOrders

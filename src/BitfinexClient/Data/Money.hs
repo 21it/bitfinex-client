@@ -13,7 +13,7 @@ module BitfinexClient.Data.Money
   )
 where
 
-import BitfinexClient.Class.ToQueryParam
+import BitfinexClient.Class.ToRequestParam
 import BitfinexClient.Data.Kind
 import BitfinexClient.Data.Type
 import BitfinexClient.Import.External
@@ -29,7 +29,7 @@ data CurrencyPair
       }
   deriving (Eq, Ord, Show)
 
-instance ToQueryParam CurrencyPair where
+instance ToRequestParam CurrencyPair where
   toBodyParam x =
     "t"
       <> (coerce $ currencyPairBase x :: Text)

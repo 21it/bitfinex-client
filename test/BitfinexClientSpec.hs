@@ -33,11 +33,17 @@ spec = before newEnv $ do
     let amt = 2
     x <- runExceptT $ do
       pair <- except $ newCurrencyPair "ADA" "BTC"
-      tweak <- except . newPosRat $ 999 % 1000
+      tweak <- except . newPosRat $ 995 % 1000
       rate <-
         tweakExchangeRate (* tweak)
           <$> Bitfinex.marketAveragePrice pair amt
       Bitfinex.submitOrder env rate amt [PostOnly]
+    print x
+    x `shouldSatisfy` isRight
+  it "RetrieveOrders succeeds" $ \env -> do
+    x <- runExceptT $ do
+      pair <- except $ newCurrencyPair "ADA" "BTC"
+      Bitfinex.retrieveOrders env pair []
     print x
     x `shouldSatisfy` isRight
   it "OrdersHistory succeeds" $ \env -> do
