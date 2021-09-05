@@ -36,6 +36,8 @@ library
       BitfinexClient.Data.FeeSummary
       BitfinexClient.Data.Kind
       BitfinexClient.Data.MarketAveragePrice
+      BitfinexClient.Data.Money
+      BitfinexClient.Data.Order
       BitfinexClient.Data.SubmitOrder
       BitfinexClient.Data.Type
       BitfinexClient.Import
@@ -94,11 +96,11 @@ library
     , replica
     , resource-pool
     , retry
-    , safe-money
     , stm
     , template-haskell
     , text
     , time
+    , transformers
     , unbounded-delays
     , universum
     , unliftio
@@ -166,11 +168,11 @@ test-suite bitfinex-client-test
     , replica
     , resource-pool
     , retry
-    , safe-money
     , stm
     , template-haskell
     , text
     , time
+    , transformers
     , unbounded-delays
     , universum
     , unliftio

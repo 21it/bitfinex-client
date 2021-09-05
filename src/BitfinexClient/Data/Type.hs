@@ -1,22 +1,20 @@
 module BitfinexClient.Data.Type
   ( LogFormat (..),
-    CurrencyCode (..),
-    CurrencyPair (..),
     Rpc (..),
     Error (..),
     PrvKey (..),
     ApiKey (..),
     RequestMethod (..),
     BaseUrl (..),
-    OrderId (..),
-    Order (..),
     RawResponse (..),
     Nonce (..),
-    OrderFlag (..),
-    OrderFlagAcc (..),
+    PosRat,
+    unPosRat,
+    newPosRat,
   )
 where
 
+import BitfinexClient.Class.ToQueryParam
 import BitfinexClient.Data.Kind
 import BitfinexClient.Import.External
 import qualified Data.ByteString as BS
@@ -30,17 +28,6 @@ data LogFormat
   | Json
   deriving (Eq, Ord, Show, Read)
 
-newtype CurrencyCode (a :: CurrencyRelation)
-  = CurrencyCode Text
-  deriving newtype (Eq, Ord, Show, Read, IsString)
-
-data CurrencyPair
-  = CurrencyPair
-      { currencyPairBase :: CurrencyCode 'Base,
-        currencyPairQuote :: CurrencyCode 'Quote
-      }
-  deriving (Eq, Ord, Show)
-
 data Rpc (method :: Method)
   = Rpc
 
@@ -49,6 +36,7 @@ data Error
   | ErrorWebPub Web.Request (Web.Response ByteString)
   | ErrorWebPrv ByteString Web.Request (Web.Response ByteString)
   | ErrorFromRpc Text
+  | ErrorSmartCon Text
   deriving (Show)
 
 newtype PrvKey
@@ -74,18 +62,6 @@ newtype BaseUrl
   = BaseUrl Text
   deriving newtype (Eq, Ord, Show, IsString)
 
-newtype OrderId
-  = OrderId Integer
-  deriving newtype (Eq, Ord, Show)
-
-data Order
-  = Order
-      { orderId :: OrderId,
-        orderRate :: SomeExchangeRate,
-        orderAmount :: Rational
-      }
-  deriving (Eq, Ord, Show)
-
 newtype RawResponse
   = RawResponse ByteString
   deriving newtype (Eq, Ord)
@@ -102,15 +78,12 @@ newtype Nonce
   = Nonce Integer
   deriving newtype (Eq, Ord, Show)
 
-data OrderFlag
-  = Hidden
-  | Close
-  | ReduceOnly
-  | PostOnly
-  | Oco
-  | NoVarRates
-  deriving (Eq, Ord, Show)
+newtype PosRat
+  = PosRat {unPosRat :: Rational}
+  deriving newtype (Eq, Ord, Show, Num, ToQueryParam)
 
-newtype OrderFlagAcc
-  = OrderFlagAcc Integer
-  deriving newtype (Eq, Ord, Show, Num, ToJSON)
+newPosRat :: Rational -> Either Error PosRat
+newPosRat x
+  | x > 0 = Right $ PosRat x
+  | otherwise =
+    Left . ErrorSmartCon $ "PosRat should be positive, but got " <> show x

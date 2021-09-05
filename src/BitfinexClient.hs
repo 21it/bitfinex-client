@@ -15,7 +15,7 @@ marketAveragePrice ::
   MonadIO m =>
   CurrencyPair ->
   Rational ->
-  ExceptT Error m SomeExchangeRate
+  ExceptT Error m ExchangeRate
 marketAveragePrice symbol amount =
   GenericRpc.pub
     (Rpc :: Rpc 'MarketAveragePrice)
@@ -30,7 +30,7 @@ marketAveragePrice symbol amount =
 submitOrder ::
   MonadIO m =>
   Env ->
-  SomeExchangeRate ->
+  ExchangeRate ->
   Rational ->
   Set OrderFlag ->
   ExceptT Error m Order

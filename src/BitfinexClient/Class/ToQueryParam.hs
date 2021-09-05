@@ -5,7 +5,6 @@ module BitfinexClient.Class.ToQueryParam
   )
 where
 
-import BitfinexClient.Data.Type
 import BitfinexClient.Import.External
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
@@ -20,12 +19,6 @@ class ToQueryParam a where
 
 data SomeQueryParam
   = forall a. ToQueryParam a => SomeQueryParam BS.ByteString a
-
-instance ToQueryParam CurrencyPair where
-  toBodyParam x =
-    "t"
-      <> (coerce $ currencyPairBase x :: Text)
-      <> (coerce $ currencyPairQuote x :: Text)
 
 instance ToQueryParam Rational where
   toBodyParam x =

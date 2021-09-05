@@ -13,16 +13,15 @@ data Request
       }
   deriving (Eq, Ord, Show)
 
-instance FromRpc 'MarketAveragePrice Request SomeExchangeRate where
+instance FromRpc 'MarketAveragePrice Request ExchangeRate where
   fromRpc Rpc req res@(RawResponse raw) = do
     price <-
       failBecause "ExchangeRate is missing" $
         raw ^? nth 0 . _Number
-    failBecause "ExchangeRate is invalid" $
-      mkSomeExchangeRate
-        (coerce $ currencyPairBase currencyPair)
-        (coerce $ currencyPairQuote currencyPair)
-        (toRational price)
+    newExchangeRate
+      (coerce $ currencyPairBase currencyPair)
+      (coerce $ currencyPairQuote currencyPair)
+      (toRational price)
     where
       currencyPair =
         symbol req

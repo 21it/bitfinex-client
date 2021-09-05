@@ -22,6 +22,7 @@ import Control.Concurrent.STM.TChan as X
   )
 import Control.Concurrent.Thread.Delay as X (delay)
 import Control.Monad (forever)
+import Control.Monad.Trans.Except as X (except)
 import Data.Aeson as X (ToJSON (..))
 import Data.Bifunctor as X (bimap, first, second)
 import Data.ByteString.Lazy as X (ByteString)
@@ -87,14 +88,6 @@ import Katip as X
     permitItem,
     registerScribe,
     runKatipContextT,
-  )
-import Money as X
-  ( ExchangeRate,
-    SomeExchangeRate,
-    mkSomeExchangeRate,
-    someExchangeRateDstCurrency,
-    someExchangeRateRate,
-    someExchangeRateSrcCurrency,
   )
 import Network.HTTP.Client as X (HttpException (..))
 import Network.Wai as X (Middleware)

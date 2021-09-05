@@ -9,23 +9,32 @@ import Test.Hspec
 
 spec :: Spec
 spec = before newEnv $ do
+  it "newCurrencyPair succeeds" . const $
+    newCurrencyPair "ADA" "BTC" `shouldSatisfy` isRight
+  it "newCurrencyPair fails" . const $
+    newCurrencyPair "BTC" "BTC" `shouldSatisfy` isLeft
   it "MarketAveragePrice succeeds" . const $ do
-    x <- runExceptT $ Bitfinex.marketAveragePrice (CurrencyPair "ADA" "BTC") 1
+    x <- runExceptT $ do
+      pair <- except $ newCurrencyPair "ADA" "BTC"
+      Bitfinex.marketAveragePrice pair 1
     x `shouldSatisfy` isRight
-  it "MarketAveragePrice reversed fails" . const $ do
-    x <- runExceptT $ Bitfinex.marketAveragePrice (CurrencyPair "BTC" "ADA") 1
-    x `shouldSatisfy` isLeft
-  it "MarketAveragePrice identity fails" . const $ do
-    x <- runExceptT $ Bitfinex.marketAveragePrice (CurrencyPair "BTC" "BTC") 1
+  it "MarketAveragePrice fails" . const $ do
+    x <- runExceptT $ do
+      pair <- except $ newCurrencyPair "BTC" "ADA"
+      Bitfinex.marketAveragePrice pair 1
     x `shouldSatisfy` isLeft
   it "unOrderFlagSet works" . const $
     unOrderFlagSet [Hidden, PostOnly]
       `shouldBe` OrderFlagAcc 4160
   it "SubmitOrder succeeds" $ \env -> do
+    let amt = 2
     x <- runExceptT $ do
-      rate <- Bitfinex.marketAveragePrice (CurrencyPair "ADA" "BTC") 1
-      print rate
-      Bitfinex.submitOrder env rate 2 [PostOnly]
+      pair <- except $ newCurrencyPair "ADA" "BTC"
+      tweak <- except . newPosRat $ 995 % 1000
+      rate <-
+        tweakExchangeRate (* tweak)
+          <$> Bitfinex.marketAveragePrice pair amt
+      Bitfinex.submitOrder env rate amt [PostOnly]
     print x
     x `shouldSatisfy` isRight
   it "FeeSummary succeeds" $ \env -> do

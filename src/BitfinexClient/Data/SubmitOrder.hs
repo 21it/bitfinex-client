@@ -3,13 +3,14 @@ module BitfinexClient.Data.SubmitOrder
   )
 where
 
+import BitfinexClient.Data.Order
 import BitfinexClient.Import
 import qualified Data.Aeson as A
 import Data.Aeson.Lens
 
 data Request
   = Request
-      { rate :: SomeExchangeRate,
+      { rate :: ExchangeRate,
         amount :: Rational,
         flags :: Set OrderFlag
       }
@@ -21,9 +22,9 @@ instance ToJSON Request where
       [ "type"
           A..= ("EXCHANGE LIMIT" :: Text),
         "symbol"
-          A..= toBodyParam (someExchangeRateCurrencyPair rate0),
+          A..= toBodyParam (exchangeRatePair rate0),
         "price"
-          A..= toBodyParam (someExchangeRateRate rate0),
+          A..= toBodyParam (exchangeRatePrice rate0),
         "amount"
           A..= toBodyParam (amount x),
         "flags"
@@ -41,9 +42,16 @@ instance FromRpc 'SubmitOrder Request Order where
       maybeToRight
         (fromRpcError SubmitOrder res "OrderId is missing")
         $ raw ^? nth 4 . nth 0 . nth 0 . _Integer
+    ss0 <-
+      maybeToRight
+        (fromRpcError SubmitOrder res "OrderStatus is missing")
+        $ raw ^? nth 4 . nth 0 . nth 13 . _String
+    ss1 <-
+      newOrderStatus ss0
     pure
       Order
         { orderId = OrderId id0,
           orderRate = rate req,
-          orderAmount = amount req
+          orderAmount = amount req,
+          orderStatus = ss1
         }
