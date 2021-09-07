@@ -12,7 +12,7 @@ import BitfinexClient.Import.External
 import BitfinexClient.Util
 import qualified Data.Aeson as A
 import Data.Aeson.Lens
-import qualified Data.Set as Set
+import qualified Data.Map as Map
 import qualified Data.Text as T
 
 data Request
@@ -25,26 +25,27 @@ data Request
 instance ToJSON Request where
   toJSON = toJSON . orderIds
 
-instance FromRpc 'RetrieveOrders Request (Set Order) where
-  fromRpc Rpc = parseOrderSet
+instance FromRpc 'RetrieveOrders Request (Map OrderId Order) where
+  fromRpc Rpc = parseOrderMap
 
-instance FromRpc 'OrdersHistory Request (Set Order) where
-  fromRpc Rpc = parseOrderSet
+instance FromRpc 'OrdersHistory Request (Map OrderId Order) where
+  fromRpc Rpc = parseOrderMap
 
-parseOrderSet :: Request -> RawResponse -> Either Error (Set Order)
-parseOrderSet req res@(RawResponse raw) = do
+parseOrderMap :: Request -> RawResponse -> Either Error (Map OrderId Order)
+parseOrderMap req res@(RawResponse raw) = do
   json <-
     first (failure . T.pack) $ A.eitherDecode raw
   case json of
-    A.Array xs -> Set.fromList <$> mapM parser (toList xs)
+    A.Array xs -> foldrM parser mempty xs
     _ -> Left $ failure "Json value is not an array"
   where
     failure =
       fromRpcError RetrieveOrders res
-    parser x = do
+    parser x acc = do
       id0 <-
         maybeToRight (failure "OrderId is missing") $
-          x ^? nth 0 . _Integer
+          OrderId
+            <$> x ^? nth 0 . _Integer
       amt <-
         maybeToRight (failure "OrderAmount is missing") $
           x ^? nth 7 . _Number
@@ -60,10 +61,12 @@ parseOrderSet req res@(RawResponse raw) = do
           $ x ^? nth 16 . _Number
       rate <-
         newExchangeRate' (currencyPair req) (toRational price)
-      pure
-        Order
-          { orderId = OrderId id0,
-            orderRate = rate,
-            orderAmount = toRational amt,
-            orderStatus = ss1
-          }
+      let order =
+            Order
+              { orderId = id0,
+                orderRate = rate,
+                orderAmount = toRational amt,
+                orderStatus = ss1
+              }
+      pure $
+        Map.insert id0 order acc

@@ -62,7 +62,7 @@ retrieveOrders ::
   Env ->
   CurrencyPair ->
   Set OrderId ->
-  ExceptT Error m (Set Order)
+  ExceptT Error m (Map OrderId Order)
 retrieveOrders env pair ids =
   GenericRpc.prv
     (Rpc :: Rpc 'RetrieveOrders)
@@ -77,7 +77,7 @@ ordersHistory ::
   Env ->
   CurrencyPair ->
   Set OrderId ->
-  ExceptT Error m (Set Order)
+  ExceptT Error m (Map OrderId Order)
 ordersHistory env pair ids =
   GenericRpc.prv
     (Rpc :: Rpc 'OrdersHistory)

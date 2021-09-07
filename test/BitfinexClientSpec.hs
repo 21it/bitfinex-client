@@ -50,4 +50,5 @@ spec = before newEnv $ do
     x <- runExceptT $ do
       pair <- except $ newCurrencyPair "ADA" "BTC"
       Bitfinex.ordersHistory env pair []
+    print x
     x `shouldSatisfy` isRight

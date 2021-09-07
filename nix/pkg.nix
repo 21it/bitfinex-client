@@ -4,10 +4,9 @@
 , hspec-wai, http-client, http-client-tls, http-types, katip, lens
 , lens-aeson, memory, microlens, monad-logger, persistent
 , persistent-migration, persistent-postgresql, persistent-template
-, replica, resource-pool, retry, safe-money, stdenv, stm
-, template-haskell, text, time, unbounded-delays, universum
-, unliftio, vector, wai, wai-middleware-static-embedded, warp
-, websockets
+, replica, resource-pool, retry, stdenv, stm, template-haskell
+, text, time, transformers, unbounded-delays, universum, unliftio
+, vector, wai, wai-middleware-static-embedded, warp, websockets
 }:
 mkDerivation {
   pname = "bitfinex-client";
@@ -19,9 +18,9 @@ mkDerivation {
     extra file-embed hspec hspec-wai http-client http-client-tls
     http-types katip lens lens-aeson memory microlens monad-logger
     persistent persistent-migration persistent-postgresql
-    persistent-template replica resource-pool retry safe-money stm
-    template-haskell text time unbounded-delays universum unliftio
-    vector wai wai-middleware-static-embedded warp websockets
+    persistent-template replica resource-pool retry stm
+    template-haskell text time transformers unbounded-delays universum
+    unliftio vector wai wai-middleware-static-embedded warp websockets
   ];
   libraryToolDepends = [ hpack ];
   testHaskellDepends = [
@@ -30,9 +29,9 @@ mkDerivation {
     extra file-embed hspec hspec-wai http-client http-client-tls
     http-types katip lens lens-aeson memory microlens monad-logger
     persistent persistent-migration persistent-postgresql
-    persistent-template replica resource-pool retry safe-money stm
-    template-haskell text time unbounded-delays universum unliftio
-    vector wai wai-middleware-static-embedded warp websockets
+    persistent-template replica resource-pool retry stm
+    template-haskell text time transformers unbounded-delays universum
+    unliftio vector wai wai-middleware-static-embedded warp websockets
   ];
   prePatch = "hpack";
   homepage = "https://github.com/tkachuk-labs/bitfinex-client#readme";
