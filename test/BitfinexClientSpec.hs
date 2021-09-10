@@ -52,3 +52,15 @@ spec = before newEnv $ do
       Bitfinex.ordersHistory env pair []
     print x
     x `shouldSatisfy` isRight
+  it "GetOrders succeeds" $ \env -> do
+    x <- runExceptT $ do
+      pair <- except $ newCurrencyPair "ADA" "BTC"
+      Bitfinex.getOrders env pair []
+    print x
+    x `shouldSatisfy` isRight
+  it "GetOrder succeeds" $ \env -> do
+    x <- runExceptT $ do
+      pair <- except $ newCurrencyPair "ADA" "BTC"
+      Bitfinex.getOrder env pair $ OrderId 0
+    print x
+    x `shouldSatisfy` isRight

@@ -4,6 +4,8 @@ module BitfinexClient
     submitOrder,
     retrieveOrders,
     ordersHistory,
+    getOrders,
+    getOrder,
   )
 where
 
@@ -13,6 +15,8 @@ import qualified BitfinexClient.Data.MarketAveragePrice as MarketAveragePrice
 import qualified BitfinexClient.Data.SubmitOrder as SubmitOrder
 import BitfinexClient.Import
 import qualified BitfinexClient.Rpc.Generic as GenericRpc
+import qualified Data.Map as Map
+import qualified Data.Set as Set
 
 marketAveragePrice ::
   MonadIO m =>
@@ -86,3 +90,24 @@ ordersHistory env pair ids =
       { GetOrders.currencyPair = pair,
         GetOrders.orderIds = ids
       }
+
+getOrders ::
+  MonadIO m =>
+  Env ->
+  CurrencyPair ->
+  Set OrderId ->
+  ExceptT Error m (Map OrderId Order)
+getOrders env pair ids = do
+  xs0 <- retrieveOrders env pair ids
+  xs1 <- ordersHistory env pair ids
+  pure $ xs1 <> xs0
+
+getOrder ::
+  MonadIO m =>
+  Env ->
+  CurrencyPair ->
+  OrderId ->
+  ExceptT Error m (Maybe Order)
+getOrder env pair id0 =
+  Map.lookup id0
+    <$> getOrders env pair (Set.singleton id0)
