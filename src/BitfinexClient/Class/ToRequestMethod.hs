@@ -1,3 +1,5 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+
 module BitfinexClient.Class.ToRequestMethod
   ( ToRequestMethod (..),
   )
@@ -7,19 +9,19 @@ import BitfinexClient.Data.Kind
 import BitfinexClient.Data.Type
 
 class ToRequestMethod (method :: Method) where
-  toRequestMethod :: Rpc (method :: Method) -> RequestMethod
+  toRequestMethod :: RequestMethod
 
 instance ToRequestMethod 'MarketAveragePrice where
-  toRequestMethod Rpc = POST
+  toRequestMethod = POST
 
 instance ToRequestMethod 'FeeSummary where
-  toRequestMethod Rpc = POST
+  toRequestMethod = POST
 
 instance ToRequestMethod 'SubmitOrder where
-  toRequestMethod Rpc = POST
+  toRequestMethod = POST
 
 instance ToRequestMethod 'RetrieveOrders where
-  toRequestMethod Rpc = POST
+  toRequestMethod = POST
 
 instance ToRequestMethod 'OrdersHistory where
-  toRequestMethod Rpc = POST
+  toRequestMethod = POST

@@ -20,7 +20,7 @@ data Response
   deriving (Eq, Ord, Show)
 
 instance FromRpc 'FeeSummary a Response where
-  fromRpc Rpc _ res@(RawResponse raw) = do
+  fromRpc _ res@(RawResponse raw) = do
     x0 <- parse 0 0 "makerCrypto2CryptoFee"
     x1 <- parse 0 1 "makerCrypto2StableFee"
     x2 <- parse 0 2 "makerCrypto2FiatFee"

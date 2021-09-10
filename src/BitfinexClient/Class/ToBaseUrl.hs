@@ -1,3 +1,5 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+
 module BitfinexClient.Class.ToBaseUrl
   ( ToBaseUrl (..),
   )
@@ -7,22 +9,22 @@ import BitfinexClient.Data.Kind
 import BitfinexClient.Data.Type
 
 class ToBaseUrl (method :: Method) where
-  toBaseUrl :: Rpc (method :: Method) -> BaseUrl
+  toBaseUrl :: BaseUrl
 
 instance ToBaseUrl 'MarketAveragePrice where
-  toBaseUrl Rpc = prv
+  toBaseUrl = prv
 
 instance ToBaseUrl 'FeeSummary where
-  toBaseUrl Rpc = prv
+  toBaseUrl = prv
 
 instance ToBaseUrl 'SubmitOrder where
-  toBaseUrl Rpc = prv
+  toBaseUrl = prv
 
 instance ToBaseUrl 'RetrieveOrders where
-  toBaseUrl Rpc = prv
+  toBaseUrl = prv
 
 instance ToBaseUrl 'OrdersHistory where
-  toBaseUrl Rpc = prv
+  toBaseUrl = prv
 
 prv :: BaseUrl
 prv = "https://api.bitfinex.com"

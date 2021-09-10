@@ -1,3 +1,5 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+
 module BitfinexClient.Class.FromRpc
   ( FromRpc (..),
   )
@@ -8,4 +10,4 @@ import BitfinexClient.Data.Type
 import BitfinexClient.Import.External
 
 class FromRpc (method :: Method) req res where
-  fromRpc :: Rpc method -> req -> RawResponse -> Either Error res
+  fromRpc :: req -> RawResponse -> Either Error res

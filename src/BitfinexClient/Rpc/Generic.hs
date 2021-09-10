@@ -2,7 +2,8 @@
 {-# LANGUAGE TypeApplications #-}
 
 module BitfinexClient.Rpc.Generic
-  ( pub,
+  ( Rpc (..),
+    pub,
     prv,
   )
 where
@@ -22,65 +23,54 @@ import qualified Network.HTTP.Client as Web
 import qualified Network.HTTP.Client.TLS as Tls
 import qualified Network.HTTP.Types as Web
 
-catchWeb ::
-  (MonadIO m) =>
-  IO (Either Error a) ->
-  ExceptT Error m a
-catchWeb this =
-  --
-  -- TODO : hide sensitive data like headers
-  --
-  ExceptT . liftIO $
-    this
-      `catch` (\(x :: HttpException) -> pure . Left $ ErrorWebException x)
+data Rpc (method :: Method)
+  = Rpc
 
 pub ::
-  forall m method req res rpc.
+  forall m method req res.
   ( MonadIO m,
     ToBaseUrl method,
     ToPathPieces method req,
     ToRequestMethod method,
-    FromRpc method req res,
-    rpc ~ Rpc method
+    FromRpc method req res
   ) =>
-  rpc ->
+  Rpc method ->
   [SomeQueryParam] ->
   req ->
   ExceptT Error m res
-pub rpc qs req = catchWeb $ do
+pub Rpc qs req = catchWeb $ do
   manager <-
     Web.newManager Tls.tlsManagerSettings
   webReq0 <-
     Web.parseRequest
       . T.unpack
       . T.intercalate "/"
-      $ coerce (toBaseUrl rpc) : toPathPieces @method req
+      $ coerce (toBaseUrl @method) : toPathPieces @method req
   let webReq1 =
         Web.setQueryString
           (unQueryParam <$> qs)
-          $ webReq0 {Web.method = show $ toRequestMethod rpc}
+          $ webReq0 {Web.method = show $ toRequestMethod @method}
   webRes <-
     Web.httpLbs webReq1 manager
   pure $
     if Web.responseStatus webRes == Web.ok200
-      then fromRpc rpc req . RawResponse $ Web.responseBody webRes
+      then fromRpc @method req . RawResponse $ Web.responseBody webRes
       else Left $ ErrorWebPub webReq1 webRes
 
 prv ::
-  forall m method req res rpc.
+  forall m method req res.
   ( MonadIO m,
     ToBaseUrl method,
     ToPathPieces method req,
     ToRequestMethod method,
     ToJSON req,
-    FromRpc method req res,
-    rpc ~ Rpc method
+    FromRpc method req res
   ) =>
-  rpc ->
+  Rpc method ->
   Env ->
   req ->
   ExceptT Error m res
-prv rpc env req = catchWeb $ do
+prv Rpc env req = catchWeb $ do
   manager <-
     Web.newManager Tls.tlsManagerSettings
   let apiPath =
@@ -90,10 +80,10 @@ prv rpc env req = catchWeb $ do
   webReq0 <-
     Web.parseRequest
       . T.unpack
-      $ coerce (toBaseUrl rpc) <> "/" <> apiPath
+      $ coerce (toBaseUrl @method) <> "/" <> apiPath
   let webReq1 =
         webReq0
-          { Web.method = show $ toRequestMethod rpc,
+          { Web.method = show $ toRequestMethod @method,
             Web.requestBody = Web.RequestBodyLBS reqBody,
             Web.requestHeaders =
               [ ( "Content-Type",
@@ -117,7 +107,7 @@ prv rpc env req = catchWeb $ do
     Web.httpLbs webReq1 manager
   pure $
     if Web.responseStatus webRes == Web.ok200
-      then fromRpc rpc req . RawResponse $ Web.responseBody webRes
+      then fromRpc @method req . RawResponse $ Web.responseBody webRes
       else Left $ ErrorWebPrv reqBody webReq1 webRes
 
 sign ::
@@ -133,3 +123,15 @@ sign prvKey apiPath nonce reqBody =
       <> encodeUtf8 apiPath
       <> nonce
       <> BL.toStrict reqBody
+
+catchWeb ::
+  (MonadIO m) =>
+  IO (Either Error a) ->
+  ExceptT Error m a
+catchWeb this =
+  --
+  -- TODO : hide sensitive data like headers
+  --
+  ExceptT . liftIO $
+    this
+      `catch` (\(x :: HttpException) -> pure . Left $ ErrorWebException x)

@@ -14,7 +14,7 @@ data Request
   deriving (Eq, Ord, Show)
 
 instance FromRpc 'MarketAveragePrice Request ExchangeRate where
-  fromRpc Rpc req res@(RawResponse raw) = do
+  fromRpc req res@(RawResponse raw) = do
     price <-
       failBecause "ExchangeRate is missing" $
         raw ^? nth 0 . _Number

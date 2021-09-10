@@ -34,7 +34,7 @@ instance ToJSON Request where
       rate0 = rate x
 
 instance FromRpc 'SubmitOrder Request Order where
-  fromRpc Rpc req res@(RawResponse raw) = do
+  fromRpc req res@(RawResponse raw) = do
     id0 <-
       maybeToRight
         (failure "OrderId is missing")

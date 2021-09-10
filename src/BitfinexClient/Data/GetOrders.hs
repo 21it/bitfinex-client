@@ -26,10 +26,10 @@ instance ToJSON Request where
   toJSON = toJSON . orderIds
 
 instance FromRpc 'RetrieveOrders Request (Map OrderId Order) where
-  fromRpc Rpc = parseOrderMap
+  fromRpc = parseOrderMap
 
 instance FromRpc 'OrdersHistory Request (Map OrderId Order) where
-  fromRpc Rpc = parseOrderMap
+  fromRpc = parseOrderMap
 
 parseOrderMap :: Request -> RawResponse -> Either Error (Map OrderId Order)
 parseOrderMap req res@(RawResponse raw) = do

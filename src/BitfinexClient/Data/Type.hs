@@ -1,6 +1,5 @@
 module BitfinexClient.Data.Type
   ( LogFormat (..),
-    Rpc (..),
     Error (..),
     PrvKey (..),
     ApiKey (..),
@@ -15,7 +14,6 @@ module BitfinexClient.Data.Type
 where
 
 import BitfinexClient.Class.ToRequestParam
-import BitfinexClient.Data.Kind
 import BitfinexClient.Import.External
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BL
@@ -27,9 +25,6 @@ data LogFormat
   = Bracket
   | Json
   deriving (Eq, Ord, Show, Read)
-
-data Rpc (method :: Method)
-  = Rpc
 
 data Error
   = ErrorWebException HttpException

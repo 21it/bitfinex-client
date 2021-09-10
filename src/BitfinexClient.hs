@@ -14,7 +14,7 @@ import qualified BitfinexClient.Data.GetOrders as GetOrders
 import qualified BitfinexClient.Data.MarketAveragePrice as MarketAveragePrice
 import qualified BitfinexClient.Data.SubmitOrder as SubmitOrder
 import BitfinexClient.Import
-import qualified BitfinexClient.Rpc.Generic as GenericRpc
+import qualified BitfinexClient.Rpc.Generic as Generic
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
@@ -24,8 +24,8 @@ marketAveragePrice ::
   Rational ->
   ExceptT Error m ExchangeRate
 marketAveragePrice symbol amount =
-  GenericRpc.pub
-    (Rpc :: Rpc 'MarketAveragePrice)
+  Generic.pub
+    (Generic.Rpc :: Generic.Rpc 'MarketAveragePrice)
     [ SomeQueryParam "symbol" symbol,
       SomeQueryParam "amount" amount
     ]
@@ -39,8 +39,8 @@ feeSummary ::
   Env ->
   ExceptT Error m FeeSummary.Response
 feeSummary env =
-  GenericRpc.prv
-    (Rpc :: Rpc 'FeeSummary)
+  Generic.prv
+    (Generic.Rpc :: Generic.Rpc 'FeeSummary)
     env
     (mempty :: Map Int Int)
 
@@ -52,8 +52,8 @@ submitOrder ::
   Set OrderFlag ->
   ExceptT Error m Order
 submitOrder env rate amount flags =
-  GenericRpc.prv
-    (Rpc :: Rpc 'SubmitOrder)
+  Generic.prv
+    (Generic.Rpc :: Generic.Rpc 'SubmitOrder)
     env
     SubmitOrder.Request
       { SubmitOrder.rate = rate,
@@ -68,8 +68,8 @@ retrieveOrders ::
   Set OrderId ->
   ExceptT Error m (Map OrderId Order)
 retrieveOrders env pair ids =
-  GenericRpc.prv
-    (Rpc :: Rpc 'RetrieveOrders)
+  Generic.prv
+    (Generic.Rpc :: Generic.Rpc 'RetrieveOrders)
     env
     GetOrders.Request
       { GetOrders.currencyPair = pair,
@@ -83,8 +83,8 @@ ordersHistory ::
   Set OrderId ->
   ExceptT Error m (Map OrderId Order)
 ordersHistory env pair ids =
-  GenericRpc.prv
-    (Rpc :: Rpc 'OrdersHistory)
+  Generic.prv
+    (Generic.Rpc :: Generic.Rpc 'OrdersHistory)
     env
     GetOrders.Request
       { GetOrders.currencyPair = pair,
