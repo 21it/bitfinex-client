@@ -31,7 +31,7 @@ instance ToPathPieces 'RetrieveOrders GetOrders.Request where
       "auth",
       "r",
       "orders",
-      toBodyParam $ GetOrders.currencyPair req
+      toTextParam $ GetOrders.currencyPair req
     ]
 
 instance ToPathPieces 'OrdersHistory GetOrders.Request where
@@ -40,6 +40,6 @@ instance ToPathPieces 'OrdersHistory GetOrders.Request where
       "auth",
       "r",
       "orders",
-      toBodyParam $ GetOrders.currencyPair req,
+      toTextParam $ GetOrders.currencyPair req,
       "hist"
     ]

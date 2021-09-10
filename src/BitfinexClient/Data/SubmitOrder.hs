@@ -22,11 +22,11 @@ instance ToJSON Request where
       [ "type"
           A..= ("EXCHANGE LIMIT" :: Text),
         "symbol"
-          A..= toBodyParam (exchangeRatePair rate0),
+          A..= toTextParam (exchangeRatePair rate0),
         "price"
-          A..= toBodyParam (exchangeRatePrice rate0),
+          A..= toTextParam (exchangeRatePrice rate0),
         "amount"
-          A..= toBodyParam (amount x),
+          A..= toTextParam (amount x),
         "flags"
           A..= unOrderFlagSet (flags x)
       ]

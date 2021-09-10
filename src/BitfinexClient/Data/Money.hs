@@ -30,7 +30,7 @@ data CurrencyPair
   deriving (Eq, Ord, Show)
 
 instance ToRequestParam CurrencyPair where
-  toBodyParam x =
+  toTextParam x =
     "t"
       <> (coerce $ currencyPairBase x :: Text)
       <> (coerce $ currencyPairQuote x :: Text)

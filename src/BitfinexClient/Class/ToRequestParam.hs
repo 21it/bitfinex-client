@@ -13,15 +13,15 @@ import qualified Data.Text as T
 -- TODO : rename ToRequestParam
 --
 class ToRequestParam a where
-  toBodyParam :: a -> Text
+  toTextParam :: a -> Text
   toQueryParam :: a -> Maybe BS.ByteString
-  toQueryParam = Just . encodeUtf8 . toBodyParam
+  toQueryParam = Just . encodeUtf8 . toTextParam
 
 data SomeQueryParam
   = forall a. ToRequestParam a => SomeQueryParam BS.ByteString a
 
 instance ToRequestParam Rational where
-  toBodyParam x =
+  toTextParam x =
     T.pack $ showFixed True (fromRational x :: Fixed E12)
 
 unQueryParam :: SomeQueryParam -> (BS.ByteString, Maybe BS.ByteString)
