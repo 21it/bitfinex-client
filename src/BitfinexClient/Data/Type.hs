@@ -1,6 +1,5 @@
 module BitfinexClient.Data.Type
-  ( LogFormat (..),
-    Error (..),
+  ( Error (..),
     PrvKey (..),
     ApiKey (..),
     RequestMethod (..),
@@ -20,11 +19,6 @@ import qualified Data.ByteString.Lazy as BL
 import qualified Data.Text as T
 import qualified Network.HTTP.Client as Web
 import qualified Prelude
-
-data LogFormat
-  = Bracket
-  | Json
-  deriving (Eq, Ord, Show, Read)
 
 data Error
   = ErrorWebException HttpException

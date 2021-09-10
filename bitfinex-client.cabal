@@ -26,7 +26,6 @@ source-repository head
 library
   exposed-modules:
       BitfinexClient
-      BitfinexClient.Class
       BitfinexClient.Class.FromRpc
       BitfinexClient.Class.ToBaseUrl
       BitfinexClient.Class.ToPathPieces
@@ -65,51 +64,24 @@ library
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
   build-depends:
       aeson
-    , async
     , base >=4.7 && <5
     , base16-bytestring
     , bytestring
-    , chronos
-    , co-log
-    , concur-core
-    , concur-replica
     , containers
     , cryptonite
     , envparse
-    , esqueleto
-    , extra
-    , file-embed
     , hspec
     , hspec-wai
     , http-client
     , http-client-tls
     , http-types
-    , katip
-    , lens
     , lens-aeson
     , memory
-    , microlens
-    , monad-logger
-    , persistent
-    , persistent-migration
-    , persistent-postgresql
-    , persistent-template
-    , replica
-    , resource-pool
-    , retry
-    , stm
-    , template-haskell
     , text
     , time
     , transformers
-    , unbounded-delays
     , universum
     , unliftio
-    , vector
-    , wai
-    , wai-middleware-static-embedded
-    , warp
-    , websockets
   default-language: Haskell2010
 
 test-suite bitfinex-client-test
@@ -136,50 +108,23 @@ test-suite bitfinex-client-test
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
-    , async
     , base >=4.7 && <5
     , base16-bytestring
     , bitfinex-client
     , bytestring
-    , chronos
-    , co-log
-    , concur-core
-    , concur-replica
     , containers
     , cryptonite
     , envparse
-    , esqueleto
-    , extra
-    , file-embed
     , hspec
     , hspec-wai
     , http-client
     , http-client-tls
     , http-types
-    , katip
-    , lens
     , lens-aeson
     , memory
-    , microlens
-    , monad-logger
-    , persistent
-    , persistent-migration
-    , persistent-postgresql
-    , persistent-template
-    , replica
-    , resource-pool
-    , retry
-    , stm
-    , template-haskell
     , text
     , time
     , transformers
-    , unbounded-delays
     , universum
     , unliftio
-    , vector
-    , wai
-    , wai-middleware-static-embedded
-    , warp
-    , websockets
   default-language: Haskell2010

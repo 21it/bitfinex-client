@@ -1,6 +1,5 @@
 module BitfinexClient.Import (module X) where
 
-import BitfinexClient.Class as X
 import BitfinexClient.Class.FromRpc as X
 import BitfinexClient.Class.ToBaseUrl as X
 import BitfinexClient.Class.ToRequestMethod as X

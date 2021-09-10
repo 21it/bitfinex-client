@@ -1,37 +1,22 @@
-{ mkDerivation, aeson, async, base, base16-bytestring, bytestring
-, chronos, co-log, concur-core, concur-replica, containers
-, cryptonite, envparse, esqueleto, extra, file-embed, hpack, hspec
-, hspec-wai, http-client, http-client-tls, http-types, katip, lens
-, lens-aeson, memory, microlens, monad-logger, persistent
-, persistent-migration, persistent-postgresql, persistent-template
-, replica, resource-pool, retry, stdenv, stm, template-haskell
-, text, time, transformers, unbounded-delays, universum, unliftio
-, vector, wai, wai-middleware-static-embedded, warp, websockets
+{ mkDerivation, aeson, base, base16-bytestring, bytestring
+, containers, cryptonite, envparse, hpack, hspec, hspec-wai
+, http-client, http-client-tls, http-types, lens-aeson, memory
+, stdenv, text, time, transformers, universum, unliftio
 }:
 mkDerivation {
   pname = "bitfinex-client";
   version = "0.1.0.0";
   src = ./..;
   libraryHaskellDepends = [
-    aeson async base base16-bytestring bytestring chronos co-log
-    concur-core concur-replica containers cryptonite envparse esqueleto
-    extra file-embed hspec hspec-wai http-client http-client-tls
-    http-types katip lens lens-aeson memory microlens monad-logger
-    persistent persistent-migration persistent-postgresql
-    persistent-template replica resource-pool retry stm
-    template-haskell text time transformers unbounded-delays universum
-    unliftio vector wai wai-middleware-static-embedded warp websockets
+    aeson base base16-bytestring bytestring containers cryptonite
+    envparse hspec hspec-wai http-client http-client-tls http-types
+    lens-aeson memory text time transformers universum unliftio
   ];
   libraryToolDepends = [ hpack ];
   testHaskellDepends = [
-    aeson async base base16-bytestring bytestring chronos co-log
-    concur-core concur-replica containers cryptonite envparse esqueleto
-    extra file-embed hspec hspec-wai http-client http-client-tls
-    http-types katip lens lens-aeson memory microlens monad-logger
-    persistent persistent-migration persistent-postgresql
-    persistent-template replica resource-pool retry stm
-    template-haskell text time transformers unbounded-delays universum
-    unliftio vector wai wai-middleware-static-embedded warp websockets
+    aeson base base16-bytestring bytestring containers cryptonite
+    envparse hspec hspec-wai http-client http-client-tls http-types
+    lens-aeson memory text time transformers universum unliftio
   ];
   prePatch = "hpack";
   homepage = "https://github.com/tkachuk-labs/bitfinex-client#readme";

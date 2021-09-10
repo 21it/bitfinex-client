@@ -21,18 +21,10 @@ with pkgs;
 stdenv.mkDerivation {
   name = "bitfinex-client-shell";
   buildInputs = [
-    /* IDE */
-    haskell-ide
-    /* Apps */
-    postgresql
-    /* Utils */
     git
-    nix-prefetch-scripts
-    openssh
-    cabal2nix
-    protobuf
     cacert
-    xxd
+    cabal2nix
+    haskell-ide
   ];
 
   TERM="xterm-256color";
@@ -49,9 +41,6 @@ stdenv.mkDerivation {
   BITFINEX_API_KEY=bitfinexApiKey;
   BITFINEX_PRV_KEY=bitfinexPrvKey;
   shellHook = ''
-    source ./nix/export-test-envs.sh
-    sh ./nix/spawn-test-deps.sh
-
     export HOOGLEDB=/root/.hoogle
     if [ "$(ls -A $HOOGLEDB)" ]; then
       echo "hoogle database already exists..."

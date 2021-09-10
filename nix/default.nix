@@ -26,22 +26,10 @@ in
       if drv ? "testSystemDepends"
       then drv.testSystemDepends ++ testDeps
       else testDeps;
-    isExecutable = true;
+    isExecutable = false;
     enableSharedExecutables = false;
     enableLibraryProfiling = false;
-    isLibrary = false;
+    isLibrary = true;
     doHaddock = false;
     prePatch = "hpack --force";
-    preCheck = ''
-      source ./nix/export-test-envs.sh;
-      sh ./nix/spawn-test-deps.sh;
-    '';
-    postCheck = ''
-      sh ./nix/shutdown-test-deps.sh
-    '';
-    postFixup = "rm -rf $out/lib $out/nix-support $out/share/doc";
-    postInstall = ''
-      wrapProgram "$out/bin/bitfinex-client-exe" \
-        --set SYSTEM_CERTIFICATE_PATH "${cacert}/etc/ssl/certs"
-    '';
   })
