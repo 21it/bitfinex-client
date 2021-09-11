@@ -6,6 +6,7 @@ module BitfinexClient
     ordersHistory,
     getOrders,
     getOrder,
+    module X,
   )
 where
 
@@ -14,6 +15,7 @@ import qualified BitfinexClient.Data.GetOrders as GetOrders
 import qualified BitfinexClient.Data.MarketAveragePrice as MarketAveragePrice
 import qualified BitfinexClient.Data.SubmitOrder as SubmitOrder
 import BitfinexClient.Import
+import qualified BitfinexClient.Import.Internal as X
 import qualified BitfinexClient.Rpc.Generic as Generic
 import qualified Data.Map as Map
 import qualified Data.Set as Set

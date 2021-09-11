@@ -42,6 +42,7 @@ library
       BitfinexClient.Data.Type
       BitfinexClient.Import
       BitfinexClient.Import.External
+      BitfinexClient.Import.Internal
       BitfinexClient.Rpc.Generic
       BitfinexClient.Util
   other-modules:
