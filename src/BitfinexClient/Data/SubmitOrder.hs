@@ -11,7 +11,7 @@ import Data.Aeson.Lens
 data Request
   = Request
       { rate :: ExchangeRate,
-        amount :: Rational,
+        amount :: MoneyAmount,
         flags :: Set OrderFlag
       }
   deriving (Eq, Ord, Show)

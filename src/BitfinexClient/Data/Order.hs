@@ -18,7 +18,7 @@ data Order
   = Order
       { orderId :: OrderId,
         orderRate :: ExchangeRate,
-        orderAmount :: Rational,
+        orderAmount :: MoneyAmount,
         orderStatus :: OrderStatus
       }
   deriving (Eq, Ord, Show)

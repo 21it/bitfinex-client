@@ -1,5 +1,10 @@
 module BitfinexClient.Data.Money
-  ( CurrencyCode (..),
+  ( ExchangeAction (..),
+    rawAmt2ExchangeAction,
+    MoneyAmount (..),
+    newMoneyAmount,
+    newRawAmt,
+    CurrencyCode (..),
     CurrencyPair,
     currencyPairBase,
     currencyPairQuote,
@@ -17,6 +22,34 @@ import BitfinexClient.Class.ToRequestParam
 import BitfinexClient.Data.Kind
 import BitfinexClient.Data.Type
 import BitfinexClient.Import.External
+
+data ExchangeAction
+  = Buy
+  | Sell
+  deriving (Eq, Ord, Show)
+
+rawAmt2ExchangeAction :: Rational -> Either Error ExchangeAction
+rawAmt2ExchangeAction x
+  | x > 0 = Right Buy
+  | x < 0 = Right Sell
+  | otherwise =
+    Left $
+      ErrorSmartCon "ExchangeAction can not be derived from zero amount"
+
+newtype MoneyAmount
+  = MoneyAmount PosRat
+  deriving newtype (Eq, Ord, Show, Num, ToRequestParam)
+
+newMoneyAmount :: Rational -> Either Error MoneyAmount
+newMoneyAmount = (MoneyAmount <$>) . newPosRat
+
+newRawAmt :: ExchangeAction -> MoneyAmount -> Rational
+newRawAmt act amt =
+  case act of
+    Buy -> absAmt
+    Sell -> (-1) * absAmt
+  where
+    absAmt = abs . unPosRat $ coerce amt
 
 newtype CurrencyCode (a :: CurrencyRelation)
   = CurrencyCode Text
@@ -53,29 +86,35 @@ newCurrencyPair base quote =
 
 data ExchangeRate
   = ExchangeRate
-      { exchangeRatePair :: CurrencyPair,
+      { exchangeRateAction :: ExchangeAction,
+        exchangeRatePair :: CurrencyPair,
         exchangeRatePrice :: PosRat
       }
   deriving (Eq, Ord, Show)
 
 newExchangeRate ::
+  ExchangeAction ->
+  Rational ->
   CurrencyCode 'Base ->
   CurrencyCode 'Quote ->
-  Rational ->
   Either Error ExchangeRate
-newExchangeRate base quote rat = do
+newExchangeRate act rat base quote = do
   pair <- newCurrencyPair base quote
-  newExchangeRate' pair rat
+  newExchangeRate' act rat pair
 
 newExchangeRate' ::
-  CurrencyPair ->
+  ExchangeAction ->
   Rational ->
+  CurrencyPair ->
   Either Error ExchangeRate
-newExchangeRate' pair rat = do
+newExchangeRate' act rat pair = do
   posRat <- newPosRat rat
-  Right $ ExchangeRate pair posRat
+  Right $ ExchangeRate act pair posRat
 
-tweakExchangeRate :: (PosRat -> PosRat) -> ExchangeRate -> ExchangeRate
+tweakExchangeRate ::
+  (PosRat -> PosRat) ->
+  ExchangeRate ->
+  ExchangeRate
 tweakExchangeRate tweak rate =
   rate
     { exchangeRatePrice =

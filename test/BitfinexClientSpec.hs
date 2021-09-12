@@ -13,56 +13,58 @@ spec = before newEnv $ do
     newCurrencyPair "ADA" "BTC" `shouldSatisfy` isRight
   it "newCurrencyPair fails" . const $
     newCurrencyPair "BTC" "BTC" `shouldSatisfy` isLeft
-  it "MarketAveragePrice succeeds" . const $ do
-    x <- withAdaBtc $ \pair ->
-      Bitfinex.marketAveragePrice pair 1
+  it "marketAveragePrice succeeds" . const $ do
+    x <- withAdaBtc $ \amt pair -> do
+      buy <-
+        exchangeRatePrice
+          <$> Bitfinex.marketAveragePrice Buy amt pair
+      sell <-
+        exchangeRatePrice
+          <$> Bitfinex.marketAveragePrice Sell amt pair
+      liftIO $ buy `shouldSatisfy` (> sell)
     x `shouldSatisfy` isRight
-  it "MarketAveragePrice fails" . const $ do
+  it "marketAveragePrice fails" . const $ do
     x <- runExceptT $ do
+      amt <- except $ newMoneyAmount 2
       pair <- except $ newCurrencyPair "BTC" "ADA"
-      Bitfinex.marketAveragePrice pair 1
+      Bitfinex.marketAveragePrice Buy amt pair
     x `shouldSatisfy` isLeft
   it "unOrderFlagSet works" . const $
     unOrderFlagSet [Hidden, PostOnly]
       `shouldBe` OrderFlagAcc 4160
-  it "FeeSummary succeeds" $ \env -> do
+  it "feeSummary succeeds" $ \env -> do
     x <- runExceptT $ Bitfinex.feeSummary env
     x `shouldSatisfy` isRight
-  it "SubmitOrder succeeds" $ \env -> do
-    let amt = 2
-    x <- withAdaBtc $ \pair -> do
-      tweak <- except . newPosRat $ 995 % 1000
+  it "submitOrder succeeds" $ \env -> do
+    x <- withAdaBtc $ \amt pair -> do
+      tweak <- except . newPosRat $ 1000 % 1000
       rate <-
         tweakExchangeRate (* tweak)
-          <$> Bitfinex.marketAveragePrice pair amt
+          <$> Bitfinex.marketAveragePrice Buy amt pair
       Bitfinex.submitOrder env rate amt [PostOnly]
-    print x
     x `shouldSatisfy` isRight
-  it "RetrieveOrders succeeds" $ \env -> do
-    x <- withAdaBtc $ \pair ->
+  it "retrieveOrders succeeds" $ \env -> do
+    x <- withAdaBtc . const $ \pair ->
       Bitfinex.retrieveOrders env pair []
-    print x
     x `shouldSatisfy` isRight
-  it "OrdersHistory succeeds" $ \env -> do
-    x <- withAdaBtc $ \pair ->
+  it "ordersHistory succeeds" $ \env -> do
+    x <- withAdaBtc . const $ \pair ->
       Bitfinex.ordersHistory env pair []
-    print x
     x `shouldSatisfy` isRight
-  it "GetOrders succeeds" $ \env -> do
-    x <- withAdaBtc $ \pair ->
+  it "getOrders succeeds" $ \env -> do
+    x <- withAdaBtc . const $ \pair ->
       Bitfinex.getOrders env pair []
-    print x
     x `shouldSatisfy` isRight
-  it "GetOrder succeeds" $ \env -> do
-    x <- withAdaBtc $ \pair ->
+  it "getOrder succeeds" $ \env -> do
+    x <- withAdaBtc . const $ \pair ->
       Bitfinex.getOrder env pair $ OrderId 0
-    print x
     x `shouldSatisfy` isRight
 
 withAdaBtc ::
   Monad m =>
-  (CurrencyPair -> ExceptT Error m a) ->
+  (MoneyAmount -> CurrencyPair -> ExceptT Error m a) ->
   m (Either Error a)
 withAdaBtc this = runExceptT $ do
+  amt <- except $ newMoneyAmount 2
   pair <- except $ newCurrencyPair "ADA" "BTC"
-  this pair
+  this amt pair

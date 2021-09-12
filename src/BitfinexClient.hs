@@ -22,18 +22,20 @@ import qualified Data.Set as Set
 
 marketAveragePrice ::
   MonadIO m =>
+  ExchangeAction ->
+  MoneyAmount ->
   CurrencyPair ->
-  Rational ->
   ExceptT Error m ExchangeRate
-marketAveragePrice symbol amount =
+marketAveragePrice act amt sym =
   Generic.pub
     (Generic.Rpc :: Generic.Rpc 'MarketAveragePrice)
-    [ SomeQueryParam "symbol" symbol,
-      SomeQueryParam "amount" amount
+    [ SomeQueryParam "amount" $ newRawAmt act amt,
+      SomeQueryParam "symbol" sym
     ]
     MarketAveragePrice.Request
-      { MarketAveragePrice.symbol = symbol,
-        MarketAveragePrice.amount = amount
+      { MarketAveragePrice.action = act,
+        MarketAveragePrice.amount = amt,
+        MarketAveragePrice.symbol = sym
       }
 
 feeSummary ::
@@ -50,16 +52,16 @@ submitOrder ::
   MonadIO m =>
   Env ->
   ExchangeRate ->
-  Rational ->
+  MoneyAmount ->
   Set OrderFlag ->
   ExceptT Error m Order
-submitOrder env rate amount flags =
+submitOrder env rate amt flags =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'SubmitOrder)
     env
     SubmitOrder.Request
       { SubmitOrder.rate = rate,
-        SubmitOrder.amount = amount,
+        SubmitOrder.amount = amt,
         SubmitOrder.flags = flags
       }
 

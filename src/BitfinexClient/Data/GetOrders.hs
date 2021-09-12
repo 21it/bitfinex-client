@@ -46,9 +46,13 @@ parseOrderMap req res@(RawResponse raw) = do
         maybeToRight (failure "OrderId is missing") $
           OrderId
             <$> x ^? nth 0 . _Integer
-      amt <-
+      amt0 <-
         maybeToRight (failure "OrderAmount is missing") $
-          x ^? nth 7 . _Number
+          toRational <$> x ^? nth 7 . _Number
+      amt <-
+        newMoneyAmount $ abs amt0
+      act <-
+        rawAmt2ExchangeAction amt0
       ss0 <-
         maybeToRight (failure "OrderStatus is missing") $
           x ^? nth 13 . _String
@@ -60,12 +64,12 @@ parseOrderMap req res@(RawResponse raw) = do
           (failure "ExchangeRate is missing")
           $ x ^? nth 16 . _Number
       rate <-
-        newExchangeRate' (currencyPair req) (toRational price)
+        newExchangeRate' act (toRational price) (currencyPair req)
       let order =
             Order
               { orderId = id0,
                 orderRate = rate,
-                orderAmount = toRational amt,
+                orderAmount = amt,
                 orderStatus = ss1
               }
       pure $

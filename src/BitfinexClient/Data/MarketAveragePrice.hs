@@ -8,8 +8,9 @@ import Data.Aeson.Lens
 
 data Request
   = Request
-      { symbol :: CurrencyPair,
-        amount :: Rational
+      { action :: ExchangeAction,
+        amount :: MoneyAmount,
+        symbol :: CurrencyPair
       }
   deriving (Eq, Ord, Show)
 
@@ -19,9 +20,10 @@ instance FromRpc 'MarketAveragePrice Request ExchangeRate where
       failBecause "ExchangeRate is missing" $
         raw ^? nth 0 . _Number
     newExchangeRate
+      (action req)
+      (toRational price)
       (coerce $ currencyPairBase currencyPair)
       (coerce $ currencyPairQuote currencyPair)
-      (toRational price)
     where
       currencyPair =
         symbol req
