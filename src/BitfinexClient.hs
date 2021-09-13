@@ -57,14 +57,14 @@ submitOrder ::
   ExchangeRate ->
   Set OrderFlag ->
   ExceptT Error m Order
-submitOrder env action amount symbol rate flags =
+submitOrder env act amt sym rate flags =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'SubmitOrder)
     env
     SubmitOrder.Request
-      { SubmitOrder.action = action,
-        SubmitOrder.amount = amount,
-        SubmitOrder.symbol = symbol,
+      { SubmitOrder.action = act,
+        SubmitOrder.amount = amt,
+        SubmitOrder.symbol = sym,
         SubmitOrder.rate = rate,
         SubmitOrder.flags = flags
       }
@@ -75,12 +75,12 @@ retrieveOrders ::
   CurrencyPair ->
   Set OrderId ->
   ExceptT Error m (Map OrderId Order)
-retrieveOrders env pair ids =
+retrieveOrders env sym ids =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'RetrieveOrders)
     env
     GetOrders.Request
-      { GetOrders.currencyPair = pair,
+      { GetOrders.currencyPair = sym,
         GetOrders.orderIds = ids
       }
 
@@ -90,12 +90,12 @@ ordersHistory ::
   CurrencyPair ->
   Set OrderId ->
   ExceptT Error m (Map OrderId Order)
-ordersHistory env pair ids =
+ordersHistory env sym ids =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'OrdersHistory)
     env
     GetOrders.Request
-      { GetOrders.currencyPair = pair,
+      { GetOrders.currencyPair = sym,
         GetOrders.orderIds = ids
       }
 
@@ -105,9 +105,9 @@ getOrders ::
   CurrencyPair ->
   Set OrderId ->
   ExceptT Error m (Map OrderId Order)
-getOrders env pair ids = do
-  xs0 <- retrieveOrders env pair ids
-  xs1 <- ordersHistory env pair ids
+getOrders env sym ids = do
+  xs0 <- retrieveOrders env sym ids
+  xs1 <- ordersHistory env sym ids
   pure $ xs1 <> xs0
 
 getOrder ::
@@ -116,6 +116,6 @@ getOrder ::
   CurrencyPair ->
   OrderId ->
   ExceptT Error m (Maybe Order)
-getOrder env pair id0 =
+getOrder env sym id0 =
   Map.lookup id0
-    <$> getOrders env pair (Set.singleton id0)
+    <$> getOrders env sym (Set.singleton id0)
