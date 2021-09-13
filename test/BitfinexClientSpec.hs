@@ -14,16 +14,16 @@ spec = before newEnv $ do
   it "newCurrencyPair fails" . const $
     newCurrencyPair "BTC" "BTC" `shouldSatisfy` isLeft
   it "marketAveragePrice succeeds" . const $ do
-    x <- withAdaBtc $ \amt pair -> do
-      buy <- Bitfinex.marketAveragePrice Buy amt pair
-      sell <- Bitfinex.marketAveragePrice Sell amt pair
+    x <- withAdaBtc $ \amt sym -> do
+      buy <- Bitfinex.marketAveragePrice Buy amt sym
+      sell <- Bitfinex.marketAveragePrice Sell amt sym
       liftIO $ buy `shouldSatisfy` (> sell)
     x `shouldSatisfy` isRight
   it "marketAveragePrice fails" . const $ do
     x <- runExceptT $ do
       amt <- except $ newMoneyAmount 2
-      pair <- except $ newCurrencyPair "BTC" "ADA"
-      Bitfinex.marketAveragePrice Buy amt pair
+      sym <- except $ newCurrencyPair "BTC" "ADA"
+      Bitfinex.marketAveragePrice Buy amt sym
     x `shouldSatisfy` isLeft
   it "unOrderFlagSet works" . const $
     unOrderFlagSet [Hidden, PostOnly]
@@ -38,20 +38,20 @@ spec = before newEnv $ do
       Bitfinex.submitOrder env Buy amt sym (tweak * rate) [PostOnly]
     x `shouldSatisfy` isRight
   it "retrieveOrders succeeds" $ \env -> do
-    x <- withAdaBtc . const $ \pair ->
-      Bitfinex.retrieveOrders env pair []
+    x <- withAdaBtc . const $ \sym ->
+      Bitfinex.retrieveOrders env sym []
     x `shouldSatisfy` isRight
   it "ordersHistory succeeds" $ \env -> do
-    x <- withAdaBtc . const $ \pair ->
-      Bitfinex.ordersHistory env pair []
+    x <- withAdaBtc . const $ \sym ->
+      Bitfinex.ordersHistory env sym []
     x `shouldSatisfy` isRight
   it "getOrders succeeds" $ \env -> do
-    x <- withAdaBtc . const $ \pair ->
-      Bitfinex.getOrders env pair []
+    x <- withAdaBtc . const $ \sym ->
+      Bitfinex.getOrders env sym []
     x `shouldSatisfy` isRight
   it "getOrder succeeds" $ \env -> do
-    x <- withAdaBtc . const $ \pair ->
-      Bitfinex.getOrder env pair $ OrderId 0
+    x <- withAdaBtc . const $ \sym ->
+      Bitfinex.getOrder env sym $ OrderId 0
     x `shouldSatisfy` isRight
 
 withAdaBtc ::
@@ -60,5 +60,5 @@ withAdaBtc ::
   m (Either Error a)
 withAdaBtc this = runExceptT $ do
   amt <- except $ newMoneyAmount 2
-  pair <- except $ newCurrencyPair "ADA" "BTC"
-  this amt pair
+  sym <- except $ newCurrencyPair "ADA" "BTC"
+  this amt sym

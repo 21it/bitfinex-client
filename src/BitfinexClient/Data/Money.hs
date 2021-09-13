@@ -3,6 +3,9 @@ module BitfinexClient.Data.Money
     rawAmt2ExchangeAction,
     ExchangeRate,
     newExchangeRate,
+    FeeRate,
+    newFeeRate,
+    RebateRate (..),
     MoneyAmount (..),
     newMoneyAmount,
     newRawAmt,
@@ -38,6 +41,17 @@ newtype ExchangeRate
 
 newExchangeRate :: Rational -> Either Error ExchangeRate
 newExchangeRate = (ExchangeRate <$>) . newPosRat
+
+newtype FeeRate (a :: MarketRelation)
+  = FeeRate PosRat
+  deriving newtype (Eq, Ord, Show, Num)
+
+newFeeRate :: Rational -> Either Error (FeeRate a)
+newFeeRate = (FeeRate <$>) . newPosRat
+
+newtype RebateRate (a :: MarketRelation)
+  = RebateRate Rational
+  deriving newtype (Eq, Ord, Show, Num)
 
 newtype MoneyAmount
   = MoneyAmount PosRat

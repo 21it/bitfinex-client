@@ -1,6 +1,7 @@
 module BitfinexClient.Data.Kind
   ( Method (..),
     CurrencyRelation (..),
+    MarketRelation (..),
   )
 where
 
@@ -17,3 +18,7 @@ data Method
 data CurrencyRelation
   = Base
   | Quote
+
+data MarketRelation
+  = Maker
+  | Taker
