@@ -15,17 +15,9 @@ data Request
   deriving (Eq, Ord, Show)
 
 instance FromRpc 'MarketAveragePrice Request ExchangeRate where
-  fromRpc req res@(RawResponse raw) = do
-    price <-
-      failBecause "ExchangeRate is missing" $
-        raw ^? nth 0 . _Number
-    newExchangeRate
-      (action req)
-      (toRational price)
-      (coerce $ currencyPairBase currencyPair)
-      (coerce $ currencyPairQuote currencyPair)
-    where
-      currencyPair =
-        symbol req
-      failBecause err =
-        maybeToRight $ fromRpcError SubmitOrder res err
+  fromRpc _ res@(RawResponse raw) = do
+    x <-
+      maybeToRight
+        (fromRpcError MarketAveragePrice res "ExchangeRate is missing")
+        (toRational <$> raw ^? nth 0 . _Number)
+    newExchangeRate x

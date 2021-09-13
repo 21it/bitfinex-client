@@ -15,12 +15,8 @@ spec = before newEnv $ do
     newCurrencyPair "BTC" "BTC" `shouldSatisfy` isLeft
   it "marketAveragePrice succeeds" . const $ do
     x <- withAdaBtc $ \amt pair -> do
-      buy <-
-        exchangeRatePrice
-          <$> Bitfinex.marketAveragePrice Buy amt pair
-      sell <-
-        exchangeRatePrice
-          <$> Bitfinex.marketAveragePrice Sell amt pair
+      buy <- Bitfinex.marketAveragePrice Buy amt pair
+      sell <- Bitfinex.marketAveragePrice Sell amt pair
       liftIO $ buy `shouldSatisfy` (> sell)
     x `shouldSatisfy` isRight
   it "marketAveragePrice fails" . const $ do
@@ -36,12 +32,10 @@ spec = before newEnv $ do
     x <- runExceptT $ Bitfinex.feeSummary env
     x `shouldSatisfy` isRight
   it "submitOrder succeeds" $ \env -> do
-    x <- withAdaBtc $ \amt pair -> do
-      tweak <- except . newPosRat $ 1000 % 1000
-      rate <-
-        tweakExchangeRate (* tweak)
-          <$> Bitfinex.marketAveragePrice Buy amt pair
-      Bitfinex.submitOrder env rate amt [PostOnly]
+    x <- withAdaBtc $ \amt sym -> do
+      tweak <- except . newExchangeRate $ 995 % 1000
+      rate <- Bitfinex.marketAveragePrice Buy amt sym
+      Bitfinex.submitOrder env Buy amt sym (tweak * rate) [PostOnly]
     x `shouldSatisfy` isRight
   it "retrieveOrders succeeds" $ \env -> do
     x <- withAdaBtc . const $ \pair ->

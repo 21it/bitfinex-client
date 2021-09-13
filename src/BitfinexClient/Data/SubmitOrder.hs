@@ -10,8 +10,10 @@ import Data.Aeson.Lens
 
 data Request
   = Request
-      { rate :: ExchangeRate,
+      { action :: ExchangeAction,
         amount :: MoneyAmount,
+        symbol :: CurrencyPair,
+        rate :: ExchangeRate,
         flags :: Set OrderFlag
       }
   deriving (Eq, Ord, Show)
@@ -21,17 +23,15 @@ instance ToJSON Request where
     A.object
       [ "type"
           A..= ("EXCHANGE LIMIT" :: Text),
-        "symbol"
-          A..= toTextParam (exchangeRatePair rate0),
-        "price"
-          A..= toTextParam (exchangeRatePrice rate0),
         "amount"
           A..= toTextParam (amount x),
+        "symbol"
+          A..= toTextParam (symbol x),
+        "price"
+          A..= toTextParam (rate x),
         "flags"
           A..= unOrderFlagSet (flags x)
       ]
-    where
-      rate0 = rate x
 
 instance FromRpc 'SubmitOrder Request Order where
   fromRpc req res@(RawResponse raw) = do
@@ -49,8 +49,10 @@ instance FromRpc 'SubmitOrder Request Order where
     pure
       Order
         { orderId = OrderId id0,
-          orderRate = rate req,
+          orderAction = action req,
           orderAmount = amount req,
+          orderSymbol = symbol req,
+          orderRate = rate req,
           orderStatus = ss1
         }
     where

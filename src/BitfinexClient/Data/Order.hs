@@ -17,8 +17,10 @@ import qualified Data.Text as T
 data Order
   = Order
       { orderId :: OrderId,
-        orderRate :: ExchangeRate,
+        orderAction :: ExchangeAction,
         orderAmount :: MoneyAmount,
+        orderSymbol :: CurrencyPair,
+        orderRate :: ExchangeRate,
         orderStatus :: OrderStatus
       }
   deriving (Eq, Ord, Show)

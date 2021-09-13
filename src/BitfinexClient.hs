@@ -51,17 +51,21 @@ feeSummary env =
 submitOrder ::
   MonadIO m =>
   Env ->
-  ExchangeRate ->
+  ExchangeAction ->
   MoneyAmount ->
+  CurrencyPair ->
+  ExchangeRate ->
   Set OrderFlag ->
   ExceptT Error m Order
-submitOrder env rate amt flags =
+submitOrder env action amount symbol rate flags =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'SubmitOrder)
     env
     SubmitOrder.Request
-      { SubmitOrder.rate = rate,
-        SubmitOrder.amount = amt,
+      { SubmitOrder.action = action,
+        SubmitOrder.amount = amount,
+        SubmitOrder.symbol = symbol,
+        SubmitOrder.rate = rate,
         SubmitOrder.flags = flags
       }
 

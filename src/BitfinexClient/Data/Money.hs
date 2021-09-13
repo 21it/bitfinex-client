@@ -1,6 +1,8 @@
 module BitfinexClient.Data.Money
   ( ExchangeAction (..),
     rawAmt2ExchangeAction,
+    ExchangeRate,
+    newExchangeRate,
     MoneyAmount (..),
     newMoneyAmount,
     newRawAmt,
@@ -9,12 +11,6 @@ module BitfinexClient.Data.Money
     currencyPairBase,
     currencyPairQuote,
     newCurrencyPair,
-    ExchangeRate,
-    exchangeRatePair,
-    exchangeRatePrice,
-    newExchangeRate,
-    newExchangeRate',
-    tweakExchangeRate,
   )
 where
 
@@ -35,6 +31,13 @@ rawAmt2ExchangeAction x
   | otherwise =
     Left $
       ErrorSmartCon "ExchangeAction can not be derived from zero amount"
+
+newtype ExchangeRate
+  = ExchangeRate PosRat
+  deriving newtype (Eq, Ord, Show, Num, ToRequestParam)
+
+newExchangeRate :: Rational -> Either Error ExchangeRate
+newExchangeRate = (ExchangeRate <$>) . newPosRat
 
 newtype MoneyAmount
   = MoneyAmount PosRat
@@ -83,41 +86,3 @@ newCurrencyPair base quote =
     else
       Right $
         CurrencyPair base quote
-
-data ExchangeRate
-  = ExchangeRate
-      { exchangeRateAction :: ExchangeAction,
-        exchangeRatePair :: CurrencyPair,
-        exchangeRatePrice :: PosRat
-      }
-  deriving (Eq, Ord, Show)
-
-newExchangeRate ::
-  ExchangeAction ->
-  Rational ->
-  CurrencyCode 'Base ->
-  CurrencyCode 'Quote ->
-  Either Error ExchangeRate
-newExchangeRate act rat base quote = do
-  pair <- newCurrencyPair base quote
-  newExchangeRate' act rat pair
-
-newExchangeRate' ::
-  ExchangeAction ->
-  Rational ->
-  CurrencyPair ->
-  Either Error ExchangeRate
-newExchangeRate' act rat pair = do
-  posRat <- newPosRat rat
-  Right $ ExchangeRate act pair posRat
-
-tweakExchangeRate ::
-  (PosRat -> PosRat) ->
-  ExchangeRate ->
-  ExchangeRate
-tweakExchangeRate tweak rate =
-  rate
-    { exchangeRatePrice =
-        tweak $
-          exchangeRatePrice rate
-    }

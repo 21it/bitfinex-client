@@ -64,12 +64,14 @@ parseOrderMap req res@(RawResponse raw) = do
           (failure "ExchangeRate is missing")
           $ x ^? nth 16 . _Number
       rate <-
-        newExchangeRate' act (toRational price) (currencyPair req)
+        newExchangeRate $ toRational price
       let order =
             Order
               { orderId = id0,
-                orderRate = rate,
+                orderAction = act,
                 orderAmount = amt,
+                orderSymbol = currencyPair req,
+                orderRate = rate,
                 orderStatus = ss1
               }
       pure $
