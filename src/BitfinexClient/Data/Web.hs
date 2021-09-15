@@ -53,20 +53,21 @@ instance Show RawResponse where
       bs = BL.toStrict $ coerce x
 
 newtype Nonce
-  = Nonce {unNonce :: Integer}
+  = Nonce {unNonce :: Natural}
   deriving newtype (Eq, Ord, Show)
 
 newNonce :: MonadIO m => m Nonce
 newNonce = liftIO $ Nonce . utcTimeToMicros <$> getCurrentTime
 
-utcTimeToMicros :: UTCTime -> Integer
+utcTimeToMicros :: UTCTime -> Natural
 utcTimeToMicros x =
-  diffTimeToPicoseconds
-    ( fromRational
-        . toRational
-        $ diffUTCTime x epoch
-    )
-    `div` 1000000
+  fromInteger $
+    diffTimeToPicoseconds
+      ( fromRational
+          . toRational
+          $ diffUTCTime x epoch
+      )
+      `div` 1000000
 
 epoch :: UTCTime
 epoch = posixSecondsToUTCTime 0

@@ -42,7 +42,7 @@ parseOrderMap req res@(RawResponse raw) = do
       id0 <-
         maybeToRight (failure "OrderId is missing") $
           OrderId
-            <$> x ^? nth 0 . _Integer
+            <$> x ^? nth 0 . _Integral
       amt0 <-
         maybeToRight (failure "OrderAmount is missing") $
           toRational <$> x ^? nth 7 . _Number

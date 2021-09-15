@@ -45,26 +45,23 @@ where
 import BitfinexClient.Class.ToRequestParam
 import BitfinexClient.Data.Kind
 import BitfinexClient.Import.External
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as BL
 import qualified Data.Text as T
 import qualified Network.HTTP.Client as Web
-import qualified Prelude
 
 -- $orders
 -- Order data received from Bitfinex
 -- and types related to orders.
 
 newtype OrderId
-  = OrderId Integer
+  = OrderId Natural
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON)
 
 newtype OrderClientId
-  = OrderClientId Integer
+  = OrderClientId Natural
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON)
 
 newtype OrderGroupId
-  = OrderGroupId Integer
+  = OrderGroupId Natural
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON)
 
 data Order
@@ -88,7 +85,7 @@ data OrderFlag
   deriving (Eq, Ord, Show)
 
 newtype OrderFlagAcc
-  = OrderFlagAcc Integer
+  = OrderFlagAcc Natural
   deriving newtype (Eq, Ord, Show, Num, ToJSON)
 
 unOrderFlag :: OrderFlag -> OrderFlagAcc
@@ -126,38 +123,6 @@ newOrderStatus = \case
   "RSN_DUST" -> Right RsnDust
   "RSN_PAUSE" -> Right RsnPause
   _ -> Left "OrderStatus is not recognized"
-
-newtype PrvKey
-  = PrvKey BS.ByteString
-  deriving newtype (Eq, Ord, IsString)
-
-newtype ApiKey
-  = ApiKey BS.ByteString
-  deriving (Eq, Ord, IsString)
-
-instance Prelude.Show ApiKey where
-  show = const "SECRET"
-
-data RequestMethod
-  = GET
-  | POST
-  deriving (Eq, Ord, Show)
-
-newtype BaseUrl
-  = BaseUrl Text
-  deriving newtype (Eq, Ord, Show, IsString)
-
-newtype RawResponse
-  = RawResponse ByteString
-  deriving newtype (Eq, Ord)
-
-instance Show RawResponse where
-  show x =
-    case decodeUtf8' bs of
-      Left {} -> "ByteString RawResponse" <> show (BS.unpack bs)
-      Right res -> "Text RawResponse " <> T.unpack res
-    where
-      bs = BL.toStrict $ coerce x
 
 -- $trading
 -- Data related to trading and money.

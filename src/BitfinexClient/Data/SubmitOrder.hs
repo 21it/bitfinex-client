@@ -70,7 +70,7 @@ instance FromRpc 'SubmitOrder Request Order where
     id0 <-
       maybeToRight
         (failure "OrderId is missing")
-        $ raw ^? nth 4 . nth 0 . nth 0 . _Integer
+        $ raw ^? nth 4 . nth 0 . nth 0 . _Integral
     ss0 <-
       maybeToRight
         (failure "OrderStatus is missing")

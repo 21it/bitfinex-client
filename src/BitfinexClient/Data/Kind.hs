@@ -2,6 +2,7 @@ module BitfinexClient.Data.Kind
   ( Method (..),
     CurrencyRelation (..),
     MarketRelation (..),
+    Location (..),
   )
 where
 
@@ -22,3 +23,7 @@ data CurrencyRelation
 data MarketRelation
   = Maker
   | Taker
+
+data Location
+  = Local
+  | Remote
