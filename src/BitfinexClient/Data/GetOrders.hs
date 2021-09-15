@@ -22,13 +22,16 @@ data Request
 instance ToJSON Request where
   toJSON = toJSON . orderIds
 
-instance FromRpc 'RetrieveOrders Request (Map OrderId Order) where
+instance FromRpc 'RetrieveOrders Request (Map OrderId (Order 'Remote)) where
   fromRpc = parseOrderMap
 
-instance FromRpc 'OrdersHistory Request (Map OrderId Order) where
+instance FromRpc 'OrdersHistory Request (Map OrderId (Order 'Remote)) where
   fromRpc = parseOrderMap
 
-parseOrderMap :: Request -> RawResponse -> Either Error (Map OrderId Order)
+parseOrderMap ::
+  Request ->
+  RawResponse ->
+  Either Error (Map OrderId (Order 'Remote))
 parseOrderMap req res@(RawResponse raw) = do
   json <-
     first (failure . T.pack) $ A.eitherDecode raw

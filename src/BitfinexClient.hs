@@ -6,6 +6,7 @@ module BitfinexClient
     ordersHistory,
     getOrders,
     getOrder,
+    verifyOrder,
     --submitCounterOrder,
     module X,
   )
@@ -57,7 +58,7 @@ submitOrder ::
   CurrencyPair ->
   ExchangeRate ->
   SubmitOrder.Options ->
-  ExceptT Error m Order
+  ExceptT Error m (Order 'Local)
 submitOrder env act amt sym rate opts =
   --
   -- TODO : verify order???
@@ -78,7 +79,7 @@ retrieveOrders ::
   Env ->
   CurrencyPair ->
   Set OrderId ->
-  ExceptT Error m (Map OrderId Order)
+  ExceptT Error m (Map OrderId (Order 'Remote))
 retrieveOrders env sym ids =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'RetrieveOrders)
@@ -93,7 +94,7 @@ ordersHistory ::
   Env ->
   CurrencyPair ->
   Set OrderId ->
-  ExceptT Error m (Map OrderId Order)
+  ExceptT Error m (Map OrderId (Order 'Remote))
 ordersHistory env sym ids =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'OrdersHistory)
@@ -108,7 +109,7 @@ getOrders ::
   Env ->
   CurrencyPair ->
   Set OrderId ->
-  ExceptT Error m (Map OrderId Order)
+  ExceptT Error m (Map OrderId (Order 'Remote))
 getOrders env sym ids = do
   xs0 <- retrieveOrders env sym ids
   xs1 <- ordersHistory env sym ids
@@ -119,12 +120,24 @@ getOrder ::
   Env ->
   CurrencyPair ->
   OrderId ->
-  ExceptT Error m Order
+  ExceptT Error m (Order 'Remote)
 getOrder env sym id0 = do
   mOrder <-
     Map.lookup id0
       <$> getOrders env sym (Set.singleton id0)
   except $ maybeToRight (ErrorMissingOrder id0) mOrder
+
+verifyOrder ::
+  MonadIO m =>
+  Env ->
+  Order 'Local ->
+  ExceptT Error m (Order 'Remote)
+verifyOrder env locOrd = do
+  remOrd <-
+    getOrder env (orderSymbol locOrd) $ orderId locOrd
+  if remOrd == locOrd {orderStatus = orderStatus remOrd}
+    then pure remOrd
+    else throwE $ ErrorOrder "HELLO"
 --submitCounterOrder ::
 --  MonadIO m =>
 --  Env ->

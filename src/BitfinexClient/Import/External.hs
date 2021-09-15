@@ -1,6 +1,6 @@
 module BitfinexClient.Import.External (module X) where
 
-import Control.Monad.Trans.Except as X (except)
+import Control.Monad.Trans.Except as X (except, throwE)
 import Data.Aeson as X (FromJSON (..), ToJSON (..))
 import Data.ByteString.Lazy as X (ByteString)
 import Data.Coerce as X (coerce)

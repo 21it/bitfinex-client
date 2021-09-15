@@ -65,7 +65,7 @@ instance ToJSON Request where
     where
       opts = options req
 
-instance FromRpc 'SubmitOrder Request Order where
+instance FromRpc 'SubmitOrder Request (Order 'Local) where
   fromRpc req res@(RawResponse raw) = do
     id0 <-
       maybeToRight

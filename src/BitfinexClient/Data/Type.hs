@@ -64,7 +64,7 @@ newtype OrderGroupId
   = OrderGroupId Natural
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON)
 
-data Order
+data Order (a :: Location)
   = Order
       { orderId :: OrderId,
         orderAction :: ExchangeAction,
