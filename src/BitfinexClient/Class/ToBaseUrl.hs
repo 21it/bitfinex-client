@@ -6,7 +6,7 @@ module BitfinexClient.Class.ToBaseUrl
 where
 
 import BitfinexClient.Data.Kind
-import BitfinexClient.Data.Type
+import BitfinexClient.Data.Web
 
 class ToBaseUrl (method :: Method) where
   toBaseUrl :: BaseUrl

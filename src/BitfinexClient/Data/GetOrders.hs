@@ -5,11 +5,8 @@ where
 
 import BitfinexClient.Class.FromRpc
 import BitfinexClient.Data.Kind
-import BitfinexClient.Data.Money
-import BitfinexClient.Data.Order
 import BitfinexClient.Data.Type
-import BitfinexClient.Import.External
-import BitfinexClient.Util
+import BitfinexClient.Import
 import qualified Data.Aeson as A
 import Data.Aeson.Lens
 import qualified Data.Map as Map
@@ -52,7 +49,7 @@ parseOrderMap req res@(RawResponse raw) = do
       amt <-
         newMoneyAmount $ abs amt0
       act <-
-        rawAmt2ExchangeAction amt0
+        newExchangeAction amt0
       ss0 <-
         maybeToRight (failure "OrderStatus is missing") $
           x ^? nth 13 . _String

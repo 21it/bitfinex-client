@@ -36,10 +36,9 @@ library
       BitfinexClient.Data.GetOrders
       BitfinexClient.Data.Kind
       BitfinexClient.Data.MarketAveragePrice
-      BitfinexClient.Data.Money
-      BitfinexClient.Data.Order
       BitfinexClient.Data.SubmitOrder
       BitfinexClient.Data.Type
+      BitfinexClient.Data.Web
       BitfinexClient.Import
       BitfinexClient.Import.External
       BitfinexClient.Import.Internal

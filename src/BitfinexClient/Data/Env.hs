@@ -4,7 +4,7 @@ module BitfinexClient.Data.Env
   )
 where
 
-import BitfinexClient.Data.Type
+import BitfinexClient.Data.Web
 import BitfinexClient.Import.External
 import Env ((<=<), header, help, keep, nonempty, parse, str, var)
 

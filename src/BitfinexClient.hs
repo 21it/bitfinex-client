@@ -6,6 +6,7 @@ module BitfinexClient
     ordersHistory,
     getOrders,
     getOrder,
+    --submitCounterOrder,
     module X,
   )
 where
@@ -55,9 +56,12 @@ submitOrder ::
   MoneyAmount ->
   CurrencyPair ->
   ExchangeRate ->
-  Set OrderFlag ->
+  SubmitOrder.Options ->
   ExceptT Error m Order
-submitOrder env act amt sym rate flags =
+submitOrder env act amt sym rate opts =
+  --
+  -- TODO : verify order???
+  --
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'SubmitOrder)
     env
@@ -66,7 +70,7 @@ submitOrder env act amt sym rate flags =
         SubmitOrder.amount = amt,
         SubmitOrder.symbol = sym,
         SubmitOrder.rate = rate,
-        SubmitOrder.flags = flags
+        SubmitOrder.options = opts
       }
 
 retrieveOrders ::
@@ -115,7 +119,25 @@ getOrder ::
   Env ->
   CurrencyPair ->
   OrderId ->
-  ExceptT Error m (Maybe Order)
-getOrder env sym id0 =
-  Map.lookup id0
-    <$> getOrders env sym (Set.singleton id0)
+  ExceptT Error m Order
+getOrder env sym id0 = do
+  mOrder <-
+    Map.lookup id0
+      <$> getOrders env sym (Set.singleton id0)
+  except $ maybeToRight (ErrorMissingOrder id0) mOrder
+--submitCounterOrder ::
+--  MonadIO m =>
+--  Env ->
+--  Order ->
+--  FeeRate a ->
+--  ProfitRate ->
+--  Set OrderFlag ->
+--  ExceptT Error m Order
+--submitCounterOrder env ord0 fee prof flags = do
+--  ord1 <- updateVerifyOrder env ord0
+--  if orderStatus ord1 == Executed
+--    then submitOrder env Sell amt (orderSymbol ord1) rate flags
+--    else
+--      throwE . ErrorOrder $
+--        "Wrong status, can not submit counter order for "
+--          <> show ord1

@@ -21,12 +21,8 @@ with pkgs;
 stdenv.mkDerivation {
   name = "bitfinex-client-shell";
   buildInputs = [
-    git
-    cacert
-    cabal2nix
     haskell-ide
   ];
-
   TERM="xterm-256color";
   LC_ALL="C.UTF-8";
   GIT_SSL_CAINFO="${cacert}/etc/ssl/certs/ca-bundle.crt";

@@ -1,9 +1,11 @@
 module BitfinexClient.Data.SubmitOrder
   ( Request (..),
+    Options (..),
+    optsDef,
+    optsPostOnly,
   )
 where
 
-import BitfinexClient.Data.Order
 import BitfinexClient.Import
 import qualified Data.Aeson as A
 import Data.Aeson.Lens
@@ -14,24 +16,54 @@ data Request
         amount :: MoneyAmount,
         symbol :: CurrencyPair,
         rate :: ExchangeRate,
+        options :: Options
+      }
+  deriving (Eq, Ord, Show)
+
+data Options
+  = Options
+      { clientId :: Maybe OrderClientId,
+        groupId :: Maybe OrderGroupId,
         flags :: Set OrderFlag
       }
   deriving (Eq, Ord, Show)
 
+optsDef :: Options
+optsDef =
+  Options
+    { clientId = Nothing,
+      groupId = Nothing,
+      flags = mempty
+    }
+
+optsPostOnly :: Options
+optsPostOnly =
+  Options
+    { clientId = Nothing,
+      groupId = Nothing,
+      flags = [PostOnly]
+    }
+
 instance ToJSON Request where
-  toJSON x =
+  toJSON req =
     A.object
-      [ "type"
+      [ "gid"
+          A..= groupId opts,
+        "cid"
+          A..= clientId opts,
+        "type"
           A..= ("EXCHANGE LIMIT" :: Text),
         "amount"
-          A..= toTextParam (amount x),
+          A..= toTextParam (amount req),
         "symbol"
-          A..= toTextParam (symbol x),
+          A..= toTextParam (symbol req),
         "price"
-          A..= toTextParam (rate x),
+          A..= toTextParam (rate req),
         "flags"
-          A..= unOrderFlagSet (flags x)
+          A..= unOrderFlagSet (flags opts)
       ]
+    where
+      opts = options req
 
 instance FromRpc 'SubmitOrder Request Order where
   fromRpc req res@(RawResponse raw) = do

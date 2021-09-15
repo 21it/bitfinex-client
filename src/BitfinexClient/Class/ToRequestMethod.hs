@@ -6,7 +6,7 @@ module BitfinexClient.Class.ToRequestMethod
 where
 
 import BitfinexClient.Data.Kind
-import BitfinexClient.Data.Type
+import BitfinexClient.Data.Web
 
 class ToRequestMethod (method :: Method) where
   toRequestMethod :: RequestMethod
