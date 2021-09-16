@@ -1,3 +1,5 @@
+{-# OPTIONS_HADDOCK show-extensions #-}
+
 module BitfinexClient.Data.Type
   ( -- * Orders
     -- $orders
@@ -16,13 +18,12 @@ module BitfinexClient.Data.Type
     -- $trading
     ExchangeAction (..),
     newExchangeAction,
-    ExchangeRate,
+    ExchangeRate (..),
     newExchangeRate,
-    FeeRate,
+    FeeRate (..),
     newFeeRate,
     RebateRate (..),
-    ProfitRate,
-    unProfitRate,
+    ProfitRate (..),
     newProfitRate,
     MoneyAmount (..),
     newMoneyAmount,
@@ -38,6 +39,7 @@ module BitfinexClient.Data.Type
     PosRat,
     unPosRat,
     newPosRat,
+    subPosRat,
     Error (..),
   )
 where
@@ -226,6 +228,9 @@ newPosRat x
   | otherwise =
     Left . ErrorSmartCon $ "PosRat should be positive, but got " <> show x
 
+subPosRat :: PosRat -> PosRat -> Either Error PosRat
+subPosRat x0 x1 = newPosRat (coerce x0 - coerce x1)
+
 data Error
   = ErrorWebException HttpException
   | ErrorWebPub Web.Request (Web.Response ByteString)
@@ -233,8 +238,6 @@ data Error
   | ErrorFromRpc Text
   | ErrorSmartCon Text
   | ErrorMissingOrder OrderId
-  | --
-    -- TODO : add Order
-    --
-    ErrorOrder Text
+  | ErrorUnverifiedOrder (Order 'Local) (Order 'Remote)
+  | ErrorOrderStatus (Order 'Remote)
   deriving (Show)

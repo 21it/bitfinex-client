@@ -38,6 +38,8 @@ dependencies:
 - cryptonite
 - unliftio
 - containers
+- vector
+- unordered-containers
 - transformers
 - envparse
 - time

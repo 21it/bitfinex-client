@@ -1,3 +1,5 @@
+{-# OPTIONS_HADDOCK show-extensions #-}
+
 module BitfinexClient.Class.ToRequestParam
   ( ToRequestParam (..),
     SomeQueryParam (..),

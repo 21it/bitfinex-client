@@ -1,3 +1,5 @@
+{-# OPTIONS_HADDOCK show-extensions #-}
+
 module BitfinexClient.Data.SubmitOrder
   ( Request (..),
     Options (..),
@@ -46,22 +48,23 @@ optsPostOnly =
 
 instance ToJSON Request where
   toJSON req =
-    A.object
-      [ "gid"
-          A..= groupId opts,
-        "cid"
-          A..= clientId opts,
-        "type"
-          A..= ("EXCHANGE LIMIT" :: Text),
-        "amount"
-          A..= toTextParam (amount req),
-        "symbol"
-          A..= toTextParam (symbol req),
-        "price"
-          A..= toTextParam (rate req),
-        "flags"
-          A..= unOrderFlagSet (flags opts)
-      ]
+    eradicateNull $
+      A.object
+        [ "gid"
+            A..= groupId opts,
+          "cid"
+            A..= clientId opts,
+          "type"
+            A..= ("EXCHANGE LIMIT" :: Text),
+          "amount"
+            A..= toTextParam (amount req),
+          "symbol"
+            A..= toTextParam (symbol req),
+          "price"
+            A..= toTextParam (rate req),
+          "flags"
+            A..= unOrderFlagSet (flags opts)
+        ]
     where
       opts = options req
 

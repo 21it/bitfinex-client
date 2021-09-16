@@ -82,6 +82,8 @@ library
     , transformers
     , universum
     , unliftio
+    , unordered-containers
+    , vector
   default-language: Haskell2010
 
 test-suite bitfinex-client-test
@@ -127,4 +129,6 @@ test-suite bitfinex-client-test
     , transformers
     , universum
     , unliftio
+    , unordered-containers
+    , vector
   default-language: Haskell2010

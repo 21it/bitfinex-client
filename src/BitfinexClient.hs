@@ -1,13 +1,15 @@
+{-# OPTIONS_HADDOCK show-extensions #-}
+
 module BitfinexClient
   ( marketAveragePrice,
     feeSummary,
-    submitOrder,
     retrieveOrders,
     ordersHistory,
     getOrders,
     getOrder,
     verifyOrder,
-    --submitCounterOrder,
+    submitOrder,
+    submitCounterOrder,
     module X,
   )
 where
@@ -49,30 +51,6 @@ feeSummary env =
     (Generic.Rpc :: Generic.Rpc 'FeeSummary)
     env
     (mempty :: Map Int Int)
-
-submitOrder ::
-  MonadIO m =>
-  Env ->
-  ExchangeAction ->
-  MoneyAmount ->
-  CurrencyPair ->
-  ExchangeRate ->
-  SubmitOrder.Options ->
-  ExceptT Error m (Order 'Local)
-submitOrder env act amt sym rate opts =
-  --
-  -- TODO : verify order???
-  --
-  Generic.prv
-    (Generic.Rpc :: Generic.Rpc 'SubmitOrder)
-    env
-    SubmitOrder.Request
-      { SubmitOrder.action = act,
-        SubmitOrder.amount = amt,
-        SubmitOrder.symbol = sym,
-        SubmitOrder.rate = rate,
-        SubmitOrder.options = opts
-      }
 
 retrieveOrders ::
   MonadIO m =>
@@ -137,20 +115,48 @@ verifyOrder env locOrd = do
     getOrder env (orderSymbol locOrd) $ orderId locOrd
   if remOrd == locOrd {orderStatus = orderStatus remOrd}
     then pure remOrd
-    else throwE $ ErrorOrder "HELLO"
---submitCounterOrder ::
---  MonadIO m =>
---  Env ->
---  Order ->
---  FeeRate a ->
---  ProfitRate ->
---  Set OrderFlag ->
---  ExceptT Error m Order
---submitCounterOrder env ord0 fee prof flags = do
---  ord1 <- updateVerifyOrder env ord0
---  if orderStatus ord1 == Executed
---    then submitOrder env Sell amt (orderSymbol ord1) rate flags
---    else
---      throwE . ErrorOrder $
---        "Wrong status, can not submit counter order for "
---          <> show ord1
+    else throwE $ ErrorUnverifiedOrder locOrd remOrd
+
+submitOrder ::
+  MonadIO m =>
+  Env ->
+  ExchangeAction ->
+  MoneyAmount ->
+  CurrencyPair ->
+  ExchangeRate ->
+  SubmitOrder.Options ->
+  ExceptT Error m (Order 'Remote)
+submitOrder env act amt sym rate opts = do
+  order <-
+    Generic.prv
+      (Generic.Rpc :: Generic.Rpc 'SubmitOrder)
+      env
+      SubmitOrder.Request
+        { SubmitOrder.action = act,
+          SubmitOrder.amount = amt,
+          SubmitOrder.symbol = sym,
+          SubmitOrder.rate = rate,
+          SubmitOrder.options = opts
+        }
+  verifyOrder env order
+
+submitCounterOrder ::
+  MonadIO m =>
+  Env ->
+  Order 'Local ->
+  FeeRate a ->
+  ProfitRate ->
+  SubmitOrder.Options ->
+  ExceptT Error m (Order 'Remote)
+submitCounterOrder env locOrd feeRate profRate opts = do
+  --
+  -- TODO !!!
+  --
+  remOrd <- verifyOrder env locOrd
+  amtRate <- except $ 1 `subPosRat` coerce feeRate
+  let amt = (orderAmount locOrd) * (coerce amtRate)
+  if orderStatus remOrd == Executed
+    then submitOrder env Sell amt (orderSymbol remOrd) rate opts
+    else throwE $ ErrorOrderStatus remOrd
+  where
+    rate = (orderRate locOrd) * (1 + 2 * (coerce feeRate) + (coerce profRate))

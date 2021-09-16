@@ -1,3 +1,5 @@
+{-# OPTIONS_HADDOCK show-extensions #-}
+
 module BitfinexClientSpec
   ( spec,
   )
@@ -42,10 +44,12 @@ spec = before newEnv $ do
     x `shouldSatisfy` isRight
   it "submitOrder succeeds" $ \env -> do
     x <- withAdaBtc $ \amt sym -> do
-      tweak <- except . newExchangeRate $ 995 % 1000
+      --tweak <- except . newExchangeRate $ 995 % 1000
+      tweak <- except . newExchangeRate $ 1000 % 1000
       rate <- Bitfinex.marketAveragePrice Buy amt sym
       let opts = SubmitOrder.optsPostOnly
       Bitfinex.submitOrder env Buy amt sym (tweak * rate) opts
+    print x
     x `shouldSatisfy` isRight
   it "retrieveOrders succeeds" $ \env -> do
     x <- withAdaBtc . const $ \sym ->

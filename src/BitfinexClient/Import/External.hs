@@ -1,4 +1,9 @@
-module BitfinexClient.Import.External (module X) where
+{-# OPTIONS_HADDOCK show-extensions #-}
+
+module BitfinexClient.Import.External
+  ( module X,
+  )
+where
 
 import Control.Monad.Trans.Except as X (except, throwE)
 import Data.Aeson as X (FromJSON (..), ToJSON (..))

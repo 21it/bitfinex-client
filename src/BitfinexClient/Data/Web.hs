@@ -1,3 +1,5 @@
+{-# OPTIONS_HADDOCK show-extensions #-}
+
 module BitfinexClient.Data.Web
   ( PrvKey (..),
     ApiKey (..),

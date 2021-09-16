@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# OPTIONS_HADDOCK show-extensions #-}
 
 module BitfinexClient.Class.ToRequestMethod
   ( ToRequestMethod (..),

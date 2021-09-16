@@ -1,5 +1,6 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeApplications #-}
+{-# OPTIONS_HADDOCK show-extensions #-}
 
 module BitfinexClient.Rpc.Generic
   ( Rpc (..),
