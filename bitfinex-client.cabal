@@ -92,6 +92,7 @@ test-suite bitfinex-client-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      BitfinexClient.Data.TypeSpec
       BitfinexClientSpec
       Paths_bitfinex_client
   hs-source-dirs:

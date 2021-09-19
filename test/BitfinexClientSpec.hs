@@ -14,10 +14,6 @@ import Test.Hspec
 
 spec :: Spec
 spec = before newEnv $ do
-  it "newCurrencyPair succeeds" . const $
-    newCurrencyPair "ADA" "BTC" `shouldSatisfy` isRight
-  it "newCurrencyPair fails" . const $
-    newCurrencyPair "BTC" "BTC" `shouldSatisfy` isLeft
   it "marketAveragePrice succeeds" . const $ do
     x <- withAdaBtc $ \amt sym -> do
       buy <- Bitfinex.marketAveragePrice Buy amt sym
@@ -30,9 +26,6 @@ spec = before newEnv $ do
       sym <- except $ newCurrencyPair "BTC" "ADA"
       Bitfinex.marketAveragePrice Buy amt sym
     x `shouldSatisfy` isLeft
-  it "unOrderFlagSet works" . const $
-    unOrderFlagSet [Hidden, PostOnly]
-      `shouldBe` OrderFlagAcc 4160
   it "feeSummary succeeds" $ \env -> do
     x <- runExceptT $ Bitfinex.feeSummary env
     x `shouldSatisfy` isRight
