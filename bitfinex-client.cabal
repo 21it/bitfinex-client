@@ -31,6 +31,7 @@ library
       BitfinexClient.Class.ToPathPieces
       BitfinexClient.Class.ToRequestMethod
       BitfinexClient.Class.ToRequestParam
+      BitfinexClient.Data.CancelOrderMulti
       BitfinexClient.Data.Env
       BitfinexClient.Data.FeeSummary
       BitfinexClient.Data.GetOrders
@@ -42,6 +43,7 @@ library
       BitfinexClient.Import
       BitfinexClient.Import.External
       BitfinexClient.Import.Internal
+      BitfinexClient.Parser
       BitfinexClient.Rpc.Generic
       BitfinexClient.Util
   other-modules:

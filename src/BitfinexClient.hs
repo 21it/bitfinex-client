@@ -9,11 +9,13 @@ module BitfinexClient
     getOrder,
     verifyOrder,
     submitOrder,
+    cancelOrderMulti,
     submitCounterOrder,
     module X,
   )
 where
 
+import qualified BitfinexClient.Data.CancelOrderMulti as CancelOrderMulti
 import qualified BitfinexClient.Data.FeeSummary as FeeSummary
 import qualified BitfinexClient.Data.GetOrders as GetOrders
 import qualified BitfinexClient.Data.MarketAveragePrice as MarketAveragePrice
@@ -139,6 +141,16 @@ submitOrder env act amt sym rate opts = do
           SubmitOrder.options = opts
         }
   verifyOrder env order
+
+cancelOrderMulti ::
+  MonadIO m =>
+  Env ->
+  CancelOrderMulti.Request ->
+  ExceptT Error m (Map OrderId (Order 'Remote))
+cancelOrderMulti env =
+  Generic.prv
+    (Generic.Rpc :: Generic.Rpc 'CancelOrderMulti)
+    env
 
 submitCounterOrder ::
   MonadIO m =>

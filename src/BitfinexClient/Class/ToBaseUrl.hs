@@ -27,5 +27,8 @@ instance ToBaseUrl 'RetrieveOrders where
 instance ToBaseUrl 'OrdersHistory where
   toBaseUrl = prv
 
+instance ToBaseUrl 'CancelOrderMulti where
+  toBaseUrl = prv
+
 prv :: BaseUrl
 prv = "https://api.bitfinex.com"

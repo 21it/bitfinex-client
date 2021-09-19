@@ -44,3 +44,14 @@ instance ToPathPieces 'OrdersHistory GetOrders.Request where
       toTextParam $ GetOrders.currencyPair req,
       "hist"
     ]
+
+instance ToPathPieces 'CancelOrderMulti req where
+  toPathPieces =
+    const
+      [ "v2",
+        "auth",
+        "w",
+        "order",
+        "cancel",
+        "multi"
+      ]

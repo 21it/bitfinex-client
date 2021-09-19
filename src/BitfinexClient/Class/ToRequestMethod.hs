@@ -26,3 +26,6 @@ instance ToRequestMethod 'RetrieveOrders where
 
 instance ToRequestMethod 'OrdersHistory where
   toRequestMethod = POST
+
+instance ToRequestMethod 'CancelOrderMulti where
+  toRequestMethod = POST

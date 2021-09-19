@@ -16,6 +16,7 @@ data Method
   | SubmitOrder
   | RetrieveOrders
   | OrdersHistory
+  | CancelOrderMulti
   deriving (Show)
 
 data CurrencyRelation

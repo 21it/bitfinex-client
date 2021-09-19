@@ -33,6 +33,7 @@ module BitfinexClient.Data.Type
     currencyPairBase,
     currencyPairQuote,
     newCurrencyPair,
+    newCurrencyPair',
 
     -- * Misc
     -- $misc
@@ -214,6 +215,15 @@ newCurrencyPair base quote =
     else
       Right $
         CurrencyPair base quote
+
+newCurrencyPair' :: Text -> Either Error CurrencyPair
+newCurrencyPair' raw =
+  if (length raw == 7) && (prefix == "t")
+    then newCurrencyPair (CurrencyCode base0) (CurrencyCode quote0)
+    else Left . ErrorSmartCon $ "Invalid CurrencyPair " <> raw
+  where
+    (prefix, xs) = T.splitAt 1 raw
+    (base0, quote0) = T.splitAt 3 xs
 
 -- $misc
 -- General utility data used elsewhere.
