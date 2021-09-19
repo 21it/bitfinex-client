@@ -6,6 +6,7 @@ module BitfinexClientSpec
 where
 
 import qualified BitfinexClient as Bitfinex
+import qualified BitfinexClient.Data.GetOrders as GetOrders
 import qualified BitfinexClient.Data.SubmitOrder as SubmitOrder
 import BitfinexClient.Import
 import qualified Data.Aeson as A
@@ -53,19 +54,21 @@ spec = before newEnv $ do
     x `shouldSatisfy` isRight
   it "retrieveOrders succeeds" $ \env -> do
     x <- withAdaBtc . const $ \sym ->
-      Bitfinex.retrieveOrders env sym []
+      Bitfinex.retrieveOrders env $ GetOrders.optsSym sym
     x `shouldSatisfy` isRight
   it "ordersHistory succeeds" $ \env -> do
     x <- withAdaBtc . const $ \sym ->
-      Bitfinex.ordersHistory env sym []
+      Bitfinex.ordersHistory env $ GetOrders.optsSym sym
     x `shouldSatisfy` isRight
   it "getOrders succeeds" $ \env -> do
     x <- withAdaBtc . const $ \sym ->
-      Bitfinex.getOrders env sym []
+      Bitfinex.getOrders env $ GetOrders.optsSym sym
     x `shouldSatisfy` isRight
   it "getOrder succeeds" $ \env -> do
-    x <- withAdaBtc . const $ \sym ->
-      Bitfinex.getOrder env sym $ OrderId 0
+    x <-
+      withAdaBtc . const . const
+        $ Bitfinex.getOrder env
+        $ OrderId 0
     x `shouldSatisfy` isRight
 
 withAdaBtc ::

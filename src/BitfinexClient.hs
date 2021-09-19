@@ -57,54 +57,40 @@ feeSummary env =
 retrieveOrders ::
   MonadIO m =>
   Env ->
-  CurrencyPair ->
-  Set OrderId ->
+  GetOrders.Options ->
   ExceptT Error m (Map OrderId (Order 'Remote))
-retrieveOrders env sym ids =
+retrieveOrders =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'RetrieveOrders)
-    env
-    GetOrders.Request
-      { GetOrders.currencyPair = sym,
-        GetOrders.orderIds = ids
-      }
 
 ordersHistory ::
   MonadIO m =>
   Env ->
-  CurrencyPair ->
-  Set OrderId ->
+  GetOrders.Options ->
   ExceptT Error m (Map OrderId (Order 'Remote))
-ordersHistory env sym ids =
+ordersHistory =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'OrdersHistory)
-    env
-    GetOrders.Request
-      { GetOrders.currencyPair = sym,
-        GetOrders.orderIds = ids
-      }
 
 getOrders ::
   MonadIO m =>
   Env ->
-  CurrencyPair ->
-  Set OrderId ->
+  GetOrders.Options ->
   ExceptT Error m (Map OrderId (Order 'Remote))
-getOrders env sym ids = do
-  xs0 <- retrieveOrders env sym ids
-  xs1 <- ordersHistory env sym ids
+getOrders env opts = do
+  xs0 <- retrieveOrders env opts
+  xs1 <- ordersHistory env opts
   pure $ xs1 <> xs0
 
 getOrder ::
   MonadIO m =>
   Env ->
-  CurrencyPair ->
   OrderId ->
   ExceptT Error m (Order 'Remote)
-getOrder env sym id0 = do
+getOrder env id0 = do
   mOrder <-
     Map.lookup id0
-      <$> getOrders env sym (Set.singleton id0)
+      <$> getOrders env (GetOrders.optsIds $ Set.singleton id0)
   except $ maybeToRight (ErrorMissingOrder id0) mOrder
 
 verifyOrder ::
@@ -114,7 +100,7 @@ verifyOrder ::
   ExceptT Error m (Order 'Remote)
 verifyOrder env locOrd = do
   remOrd <-
-    getOrder env (orderSymbol locOrd) $ orderId locOrd
+    getOrder env $ orderId locOrd
   if remOrd == locOrd {orderStatus = orderStatus remOrd}
     then pure remOrd
     else throwE $ ErrorUnverifiedOrder locOrd remOrd
@@ -147,10 +133,9 @@ cancelOrderMulti ::
   Env ->
   CancelOrderMulti.Request ->
   ExceptT Error m (Map OrderId (Order 'Remote))
-cancelOrderMulti env =
+cancelOrderMulti =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'CancelOrderMulti)
-    env
 
 submitCounterOrder ::
   MonadIO m =>
@@ -166,9 +151,9 @@ submitCounterOrder env locOrd feeRate profRate opts = do
   --
   remOrd <- verifyOrder env locOrd
   amtRate <- except $ 1 `subPosRat` coerce feeRate
-  let amt = (orderAmount locOrd) * (coerce amtRate)
+  let amt = orderAmount locOrd * coerce amtRate
   if orderStatus remOrd == Executed
     then submitOrder env Sell amt (orderSymbol remOrd) rate opts
     else throwE $ ErrorOrderStatus remOrd
   where
-    rate = (orderRate locOrd) * (1 + 2 * (coerce feeRate) + (coerce profRate))
+    rate = orderRate locOrd * (1 + 2 * coerce feeRate + coerce profRate)

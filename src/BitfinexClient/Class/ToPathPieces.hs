@@ -26,24 +26,29 @@ instance ToPathPieces 'SubmitOrder req where
   toPathPieces =
     const ["v2", "auth", "w", "order", "submit"]
 
-instance ToPathPieces 'RetrieveOrders GetOrders.Request where
-  toPathPieces req =
+instance ToPathPieces 'RetrieveOrders GetOrders.Options where
+  toPathPieces x =
     [ "v2",
       "auth",
       "r",
-      "orders",
-      toTextParam $ GetOrders.currencyPair req
+      "orders"
     ]
+      <> maybeToList
+        ( toTextParam <$> GetOrders.currencyPair x
+        )
 
-instance ToPathPieces 'OrdersHistory GetOrders.Request where
-  toPathPieces req =
+instance ToPathPieces 'OrdersHistory GetOrders.Options where
+  toPathPieces x =
     [ "v2",
       "auth",
       "r",
-      "orders",
-      toTextParam $ GetOrders.currencyPair req,
-      "hist"
+      "orders"
     ]
+      <> maybeToList
+        ( toTextParam <$> GetOrders.currencyPair x
+        )
+      <> [ "hist"
+         ]
 
 instance ToPathPieces 'CancelOrderMulti req where
   toPathPieces =
