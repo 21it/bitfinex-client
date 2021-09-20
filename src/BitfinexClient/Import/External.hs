@@ -13,7 +13,7 @@ import Data.Fixed as X (E12, Fixed, showFixed)
 import Data.Ratio as X ((%))
 import Data.Time.Clock as X
   ( DiffTime,
-    UTCTime,
+    UTCTime (..),
     addUTCTime,
     diffTimeToPicoseconds,
     diffUTCTime,

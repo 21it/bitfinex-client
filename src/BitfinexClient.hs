@@ -140,20 +140,16 @@ cancelOrderMulti =
 submitCounterOrder ::
   MonadIO m =>
   Env ->
-  Order 'Local ->
+  OrderId ->
   FeeRate a ->
   ProfitRate ->
   SubmitOrder.Options ->
   ExceptT Error m (Order 'Remote)
-submitCounterOrder env locOrd feeRate profRate opts = do
-  --
-  -- TODO !!!
-  --
-  remOrd <- verifyOrder env locOrd
+submitCounterOrder env id0 feeRate profRate opts = do
+  order <- getOrder env id0
   amtRate <- except $ 1 `subPosRat` coerce feeRate
-  let amt = orderAmount locOrd * coerce amtRate
-  if orderStatus remOrd == Executed
-    then submitOrder env Sell amt (orderSymbol remOrd) rate opts
-    else throwE $ ErrorOrderStatus remOrd
-  where
-    rate = orderRate locOrd * (1 + 2 * coerce feeRate + coerce profRate)
+  let amt = orderAmount order * coerce amtRate
+  let rate = orderRate order * (1 + 2 * coerce feeRate + coerce profRate)
+  if orderStatus order == Executed
+    then submitOrder env Sell amt (orderSymbol order) rate opts
+    else throwE $ ErrorOrderStatus order

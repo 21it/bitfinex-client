@@ -58,10 +58,7 @@ spec = before newEnv $ do
       Bitfinex.getOrders env $ GetOrders.optsSym sym
     x `shouldSatisfy` isRight
   it "getOrder succeeds" $ \env -> do
-    x <-
-      withAdaBtc . const . const
-        $ Bitfinex.getOrder env
-        $ OrderId 0
+    x <- runExceptT $ Bitfinex.getOrder env $ OrderId 0
     x `shouldSatisfy` isRight
 
 withAdaBtc ::
