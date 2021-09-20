@@ -9,6 +9,7 @@ module BitfinexClient.Data.Web
     Nonce,
     unNonce,
     newNonce,
+    epoch,
   )
 where
 
