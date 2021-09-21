@@ -11,7 +11,7 @@ import qualified Data.Aeson as A
 import Test.Hspec
 
 spec :: Spec
-spec = do
+spec =
   describe "ToJSON" $ do
     it "ByOrderId" $
       A.encode (ByOrderId [OrderId 1, OrderId 23])

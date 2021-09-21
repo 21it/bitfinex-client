@@ -9,7 +9,7 @@ import qualified BitfinexClient as Bitfinex
 import qualified BitfinexClient.Data.GetOrders as GetOrders
 import qualified BitfinexClient.Data.SubmitOrder as SubmitOrder
 import BitfinexClient.Import
-import qualified Data.Aeson as A
+import BitfinexClient.TestEnv
 import Test.Hspec
 
 spec :: Spec
@@ -29,13 +29,6 @@ spec = before newEnv $ do
   it "feeSummary succeeds" $ \env -> do
     x <- runExceptT $ Bitfinex.feeSummary env
     x `shouldSatisfy` isRight
-  it "ToJSON SubmitOrder" . const $ do
-    x <- withAdaBtc $ \amt sym -> do
-      rate <- except . newExchangeRate $ 1 % 1234
-      let opts = SubmitOrder.optsPostOnly
-          req = SubmitOrder.Request Buy amt sym rate opts
-      lift $ A.encode req `shouldBe` "{\"amount\":\"2\",\"flags\":4096,\"symbol\":\"tADABTC\",\"price\":\"0.000810372771\",\"type\":\"EXCHANGE LIMIT\"}"
-    x `shouldSatisfy` isRight
   it "submitOrder succeeds" $ \env -> do
     x <- withAdaBtc $ \amt sym -> do
       --tweak <- except . newExchangeRate $ 995 % 1000
@@ -43,7 +36,6 @@ spec = before newEnv $ do
       rate <- Bitfinex.marketAveragePrice Buy amt sym
       let opts = SubmitOrder.optsPostOnly
       Bitfinex.submitOrder env Buy amt sym (tweak * rate) opts
-    print x
     x `shouldSatisfy` isRight
   it "retrieveOrders succeeds" $ \env -> do
     x <- withAdaBtc . const $ \sym ->
@@ -60,12 +52,3 @@ spec = before newEnv $ do
   it "getOrder succeeds" $ \env -> do
     x <- runExceptT $ Bitfinex.getOrder env $ OrderId 0
     x `shouldSatisfy` isLeft
-
-withAdaBtc ::
-  Monad m =>
-  (MoneyAmount -> CurrencyPair -> ExceptT Error m a) ->
-  m (Either Error a)
-withAdaBtc this = runExceptT $ do
-  amt <- except $ newMoneyAmount 2
-  sym <- except $ newCurrencyPair "ADA" "BTC"
-  this amt sym

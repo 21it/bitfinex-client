@@ -93,7 +93,9 @@ test-suite bitfinex-client-test
   main-is: Spec.hs
   other-modules:
       BitfinexClient.Data.CancelOrderMultiSpec
+      BitfinexClient.Data.SubmitOrderSpec
       BitfinexClient.Data.TypeSpec
+      BitfinexClient.TestEnv
       BitfinexClientSpec
       Paths_bitfinex_client
   hs-source-dirs:

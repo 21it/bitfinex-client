@@ -17,6 +17,14 @@ parseOrder x = do
     maybeToRight (failure "OrderId is missing") $
       OrderId
         <$> x ^? nth 0 . _Integral
+  gid <-
+    maybeToRight (failure "OrderGroupId is missing") $
+      (Just . OrderGroupId <$> x ^? nth 1 . _Integral)
+        <|> (Nothing <$ x ^? nth 1 . _Null)
+  cid <-
+    maybeToRight (failure "OrderClientId is missing") $
+      (Just . OrderClientId <$> x ^? nth 2 . _Integral)
+        <|> (Nothing <$ x ^? nth 2 . _Null)
   sym0 <-
     maybeToRight (failure "Symbol is missing") $
       x ^? nth 3 . _String
@@ -44,6 +52,8 @@ parseOrder x = do
   pure
     Order
       { orderId = id0,
+        orderGroupId = gid,
+        orderClientId = cid,
         orderAction = act,
         orderAmount = amt,
         orderSymbol = sym,

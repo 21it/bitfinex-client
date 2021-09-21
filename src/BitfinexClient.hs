@@ -10,6 +10,9 @@ module BitfinexClient
     verifyOrder,
     submitOrder,
     cancelOrderMulti,
+    cancelOrderById,
+    cancelOrderByClientId,
+    cancelOrderByGroupId,
     submitCounterOrder,
     module X,
   )
@@ -104,6 +107,9 @@ verifyOrder env id0 req = do
   let locOrd =
         Order
           { orderId = id0,
+            orderGroupId = SubmitOrder.groupId opts,
+            orderClientId =
+              SubmitOrder.clientId opts <|> orderClientId remOrd,
             orderAction = SubmitOrder.action req,
             orderAmount = SubmitOrder.amount req,
             orderSymbol = SubmitOrder.symbol req,
@@ -113,6 +119,8 @@ verifyOrder env id0 req = do
   if remOrd == locOrd
     then pure remOrd
     else throwE $ ErrorUnverifiedOrder (coerce locOrd) remOrd
+  where
+    opts = SubmitOrder.options req
 
 submitOrder ::
   MonadIO m =>
@@ -145,6 +153,40 @@ cancelOrderMulti ::
 cancelOrderMulti =
   Generic.prv
     (Generic.Rpc :: Generic.Rpc 'CancelOrderMulti)
+
+cancelOrderById ::
+  MonadIO m =>
+  Env ->
+  OrderId ->
+  ExceptT Error m (Order 'Remote)
+cancelOrderById env id0 = do
+  mOrder <-
+    Map.lookup id0
+      <$> cancelOrderMulti
+        env
+        ( CancelOrderMulti.ByOrderId $ Set.singleton id0
+        )
+  except $
+    maybeToRight (ErrorMissingOrder id0) mOrder
+
+cancelOrderByClientId ::
+  MonadIO m =>
+  Env ->
+  OrderClientId ->
+  UTCTime ->
+  ExceptT Error m (Map OrderId (Order 'Remote))
+cancelOrderByClientId env cid utc =
+  cancelOrderMulti env . CancelOrderMulti.ByOrderClientId $
+    Set.singleton (cid, utc)
+
+cancelOrderByGroupId ::
+  MonadIO m =>
+  Env ->
+  OrderGroupId ->
+  ExceptT Error m (Map OrderId (Order 'Remote))
+cancelOrderByGroupId env gid = do
+  cancelOrderMulti env . CancelOrderMulti.ByOrderGroupId $
+    Set.singleton gid
 
 submitCounterOrder ::
   MonadIO m =>
