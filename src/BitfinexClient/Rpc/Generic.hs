@@ -27,13 +27,17 @@ import qualified Network.HTTP.Types as Web
 data Rpc (method :: Method)
   = Rpc
 
+--
+-- TODO : better generic Error values including
+-- info about Rpc and Requests!!!!!!!!
+--
 pub ::
   forall m method req res.
   ( MonadIO m,
     ToBaseUrl method,
     ToPathPieces method req,
     ToRequestMethod method,
-    FromRpc method req res
+    FromRpc method res
   ) =>
   Rpc method ->
   [SomeQueryParam] ->
@@ -55,7 +59,7 @@ pub Rpc qs req = catchWeb $ do
     Web.httpLbs webReq1 manager
   pure $
     if Web.responseStatus webRes == Web.ok200
-      then fromRpc @method req . RawResponse $ Web.responseBody webRes
+      then fromRpc @method . RawResponse $ Web.responseBody webRes
       else Left $ ErrorWebPub webReq1 webRes
 
 prv ::
@@ -65,7 +69,7 @@ prv ::
     ToPathPieces method req,
     ToRequestMethod method,
     ToJSON req,
-    FromRpc method req res
+    FromRpc method res
   ) =>
   Rpc method ->
   Env ->
@@ -108,7 +112,7 @@ prv Rpc env req = catchWeb $ do
     Web.httpLbs webReq1 manager
   pure $
     if Web.responseStatus webRes == Web.ok200
-      then fromRpc @method req . RawResponse $ Web.responseBody webRes
+      then fromRpc @method . RawResponse $ Web.responseBody webRes
       else Left $ ErrorWebPrv reqBody webReq1 webRes
 
 sign ::

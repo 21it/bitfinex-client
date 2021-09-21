@@ -8,11 +8,10 @@ where
 
 import BitfinexClient.Data.Type
 import BitfinexClient.Import.External
-import qualified Data.Aeson as A
 import Data.Aeson.Lens
 import qualified Data.Map as Map
 
-parseOrder :: A.Value -> Either Error (Order a)
+parseOrder :: (AsValue a, Show a) => a -> Either Error (Order b)
 parseOrder x = do
   id0 <-
     maybeToRight (failure "OrderId is missing") $

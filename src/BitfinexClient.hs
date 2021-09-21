@@ -96,14 +96,23 @@ getOrder env id0 = do
 verifyOrder ::
   MonadIO m =>
   Env ->
-  Order 'Local ->
+  OrderId ->
+  SubmitOrder.Request ->
   ExceptT Error m (Order 'Remote)
-verifyOrder env locOrd = do
-  remOrd <-
-    getOrder env $ orderId locOrd
-  if remOrd == locOrd {orderStatus = orderStatus remOrd}
+verifyOrder env id0 req = do
+  remOrd <- getOrder env id0
+  let locOrd =
+        Order
+          { orderId = id0,
+            orderAction = SubmitOrder.action req,
+            orderAmount = SubmitOrder.amount req,
+            orderSymbol = SubmitOrder.symbol req,
+            orderRate = SubmitOrder.rate req,
+            orderStatus = orderStatus remOrd
+          }
+  if remOrd == locOrd
     then pure remOrd
-    else throwE $ ErrorUnverifiedOrder locOrd remOrd
+    else throwE $ ErrorUnverifiedOrder (coerce locOrd) remOrd
 
 submitOrder ::
   MonadIO m =>
@@ -115,10 +124,11 @@ submitOrder ::
   SubmitOrder.Options ->
   ExceptT Error m (Order 'Remote)
 submitOrder env act amt sym rate opts = do
-  order <-
-    Generic.prv
-      (Generic.Rpc :: Generic.Rpc 'SubmitOrder)
-      env
+  order :: Order 'Remote <-
+    Generic.prv (Generic.Rpc :: Generic.Rpc 'SubmitOrder) env req
+  verifyOrder env (orderId order) req
+  where
+    req =
       SubmitOrder.Request
         { SubmitOrder.action = act,
           SubmitOrder.amount = amt,
@@ -126,7 +136,6 @@ submitOrder env act amt sym rate opts = do
           SubmitOrder.rate = rate,
           SubmitOrder.options = opts
         }
-  verifyOrder env order
 
 cancelOrderMulti ::
   MonadIO m =>
