@@ -265,6 +265,9 @@ submitCounterOrder' submit env id0 feeRate profRate opts = do
   order <- getOrder env id0
   let amtOrder = orderAmount order
   let amtQuoteLoss = amtOrder * (coerce $ orderRate order)
+  --
+  -- TODO : improve math there, seems not 100% accurate
+  --
   let amtQuoteGain = amtQuoteLoss * (1 + coerce feeRate + coerce profRate)
   amtBase <-
     except $

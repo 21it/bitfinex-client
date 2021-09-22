@@ -173,6 +173,9 @@ newtype ProfitRate
 newProfitRate :: Rational -> Either Error ProfitRate
 newProfitRate = (ProfitRate <$>) . newPosRat
 
+--
+-- TODO : add Buy/Sell phantom kind param
+--
 newtype MoneyAmount
   = MoneyAmount {unMoneyAmount :: PosRat}
   deriving newtype (Eq, Ord, Show, Num, Fractional, ToRequestParam)
@@ -180,6 +183,9 @@ newtype MoneyAmount
 newMoneyAmount :: Rational -> Either Error MoneyAmount
 newMoneyAmount = (MoneyAmount <$>) . newPosRat
 
+--
+-- TODO : remove me, implement ToRequestParam for (ExchangeAction, MoneyAmount)
+--
 newRawAmt :: ExchangeAction -> MoneyAmount -> Rational
 newRawAmt act amt =
   case act of
