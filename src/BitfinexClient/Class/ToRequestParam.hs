@@ -22,9 +22,14 @@ class ToRequestParam a where
 data SomeQueryParam
   = forall a. ToRequestParam a => SomeQueryParam BS.ByteString a
 
+data E8
+
+instance HasResolution E8 where
+  resolution _ = 100000000
+
 instance ToRequestParam Rational where
   toTextParam x =
-    T.pack $ showFixed True (fromRational x :: Fixed E12)
+    T.pack $ showFixed True (fromRational x :: Fixed E8)
 
 unQueryParam :: SomeQueryParam -> (BS.ByteString, Maybe BS.ByteString)
 unQueryParam (SomeQueryParam name x) = (name, toQueryParam x)

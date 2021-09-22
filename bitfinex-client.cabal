@@ -63,6 +63,7 @@ library
       KindSignatures
       ExistentialQuantification
       FlexibleInstances
+      FlexibleContexts
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
   build-depends:
       aeson
@@ -79,6 +80,7 @@ library
     , http-types
     , lens-aeson
     , memory
+    , siggy-chardust
     , text
     , time
     , transformers
@@ -113,6 +115,7 @@ test-suite bitfinex-client-test
       KindSignatures
       ExistentialQuantification
       FlexibleInstances
+      FlexibleContexts
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
@@ -130,6 +133,7 @@ test-suite bitfinex-client-test
     , http-types
     , lens-aeson
     , memory
+    , siggy-chardust
     , text
     , time
     , transformers

@@ -9,11 +9,13 @@ module BitfinexClient
     getOrder,
     verifyOrder,
     submitOrder,
+    submitOrderMaker,
     cancelOrderMulti,
     cancelOrderById,
     cancelOrderByClientId,
     cancelOrderByGroupId,
     submitCounterOrder,
+    submitCounterOrderMaker,
     module X,
   )
 where
@@ -145,6 +147,39 @@ submitOrder env act amt sym rate opts = do
           SubmitOrder.options = opts
         }
 
+submitOrderMaker ::
+  forall m.
+  MonadIO m =>
+  Env ->
+  ExchangeAction ->
+  MoneyAmount ->
+  CurrencyPair ->
+  ExchangeRate ->
+  SubmitOrder.Options ->
+  ExceptT Error m (Order 'Remote)
+submitOrderMaker env act amt sym rate0 opts0 =
+  this 0 rate0
+  where
+    opts =
+      opts0
+        { SubmitOrder.flags =
+            Set.insert PostOnly $
+              SubmitOrder.flags opts0
+        }
+    tweak0 =
+      case act of
+        Buy -> 999 % 1000
+        Sell -> 1001 % 1000
+    this :: Int -> ExchangeRate -> ExceptT Error m (Order 'Remote)
+    this attempt rate = do
+      order <- submitOrder env act amt sym rate opts
+      if orderStatus order /= PostOnlyCanceled
+        then pure order
+        else do
+          when (attempt >= 10) $ throwE $ ErrorOrderState order
+          tweak <- except $ newExchangeRate tweak0
+          this (attempt + 1) . bfxRoundPosRat $ tweak * rate
+
 cancelOrderMulti ::
   MonadIO m =>
   Env ->
@@ -196,11 +231,50 @@ submitCounterOrder ::
   ProfitRate ->
   SubmitOrder.Options ->
   ExceptT Error m (Order 'Remote)
-submitCounterOrder env id0 feeRate profRate opts = do
+submitCounterOrder =
+  submitCounterOrder' submitOrder
+
+submitCounterOrderMaker ::
+  MonadIO m =>
+  Env ->
+  OrderId ->
+  FeeRate 'Maker ->
+  ProfitRate ->
+  SubmitOrder.Options ->
+  ExceptT Error m (Order 'Remote)
+submitCounterOrderMaker =
+  submitCounterOrder' submitOrderMaker
+
+submitCounterOrder' ::
+  MonadIO m =>
+  ( Env ->
+    ExchangeAction ->
+    MoneyAmount ->
+    CurrencyPair ->
+    ExchangeRate ->
+    SubmitOrder.Options ->
+    ExceptT Error m (Order 'Remote)
+  ) ->
+  Env ->
+  OrderId ->
+  FeeRate a ->
+  ProfitRate ->
+  SubmitOrder.Options ->
+  ExceptT Error m (Order 'Remote)
+submitCounterOrder' submit env id0 feeRate profRate opts = do
   order <- getOrder env id0
-  amtRate <- except $ 1 `subPosRat` coerce feeRate
-  let amt = orderAmount order * coerce amtRate
-  let rate = orderRate order * (1 + 2 * coerce feeRate + coerce profRate)
-  if orderStatus order == Executed
-    then submitOrder env Sell amt (orderSymbol order) rate opts
-    else throwE $ ErrorOrderStatus order
+  let amtOrder = orderAmount order
+  let amtQuoteLoss = amtOrder * (coerce $ orderRate order)
+  let amtQuoteGain = amtQuoteLoss * (1 + coerce feeRate + coerce profRate)
+  amtBase <-
+    except $
+      bfxRoundPosRat . (amtOrder *) . coerce
+        <$> (1 `subPosRat` coerce feeRate)
+  let sellCalcPrice = coerce $ amtQuoteGain / amtBase
+  if orderAction order == Buy && orderStatus order == Executed
+    then do
+      let sym = orderSymbol order
+      sellAvgPrice <- marketAveragePrice Sell amtBase sym
+      let sellPrice = bfxRoundPosRat $ max sellCalcPrice sellAvgPrice
+      submit env Sell amtBase sym sellPrice opts
+    else throwE $ ErrorOrderState order

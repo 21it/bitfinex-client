@@ -41,6 +41,7 @@ module BitfinexClient.Data.Type
     unPosRat,
     newPosRat,
     subPosRat,
+    bfxRoundPosRat,
     Error (..),
   )
 where
@@ -174,7 +175,7 @@ newProfitRate = (ProfitRate <$>) . newPosRat
 
 newtype MoneyAmount
   = MoneyAmount {unMoneyAmount :: PosRat}
-  deriving newtype (Eq, Ord, Show, Num, ToRequestParam)
+  deriving newtype (Eq, Ord, Show, Num, Fractional, ToRequestParam)
 
 newMoneyAmount :: Rational -> Either Error MoneyAmount
 newMoneyAmount = (MoneyAmount <$>) . newPosRat
@@ -234,7 +235,7 @@ newCurrencyPair' raw =
 
 newtype PosRat
   = PosRat {unPosRat :: Rational}
-  deriving newtype (Eq, Ord, Show, Num, ToRequestParam)
+  deriving newtype (Eq, Ord, Show, Num, Fractional, ToRequestParam)
 
 newPosRat :: Rational -> Either Error PosRat
 newPosRat x
@@ -245,6 +246,15 @@ newPosRat x
 subPosRat :: PosRat -> PosRat -> Either Error PosRat
 subPosRat x0 x1 = newPosRat (coerce x0 - coerce x1)
 
+bfxRoundPosRat :: Coercible a PosRat => a -> a
+bfxRoundPosRat =
+  coerce
+    . PosRat
+    . sdRound 5
+    . dpRound 8
+    . unPosRat
+    . coerce
+
 data Error
   = ErrorWebException HttpException
   | ErrorWebPub Web.Request (Web.Response ByteString)
@@ -253,5 +263,5 @@ data Error
   | ErrorSmartCon Text
   | ErrorMissingOrder OrderId
   | ErrorUnverifiedOrder (Order 'Local) (Order 'Remote)
-  | ErrorOrderStatus (Order 'Remote)
+  | ErrorOrderState (Order 'Remote)
   deriving (Show)

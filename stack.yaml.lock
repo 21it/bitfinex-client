@@ -5,6 +5,13 @@
 
 packages:
 - completed:
+    hackage: generic-monoid-0.1.0.1@sha256:78e2d99cb083607b2ba4010af576ed364cc296c6722ca95e46519bbd6c56ae9d,747
+    pantry-tree:
+      size: 346
+      sha256: 2ea451ae5d5b015c1c965ced3da4ee585895bb0b18ff9250035fbf5f00d5482d
+  original:
+    hackage: generic-monoid-0.1.0.1@sha256:78e2d99cb083607b2ba4010af576ed364cc296c6722ca95e46519bbd6c56ae9d,747
+- completed:
     hackage: envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
     pantry-tree:
       size: 1180
