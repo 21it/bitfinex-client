@@ -13,7 +13,7 @@ import Test.Hspec
 
 spec :: Spec
 spec =
-  describe "ToJSON" $ do
+  describe "ToJSON" $
     it "Request" $ do
       x <- withAdaBtc $ \amt sym -> do
         rate <- except . newExchangeRate $ 1 % 1234
@@ -21,5 +21,5 @@ spec =
             req = SubmitOrder.Request Buy amt sym rate opts
         lift $
           A.encode req
-            `shouldBe` "{\"amount\":\"2\",\"flags\":4096,\"symbol\":\"tADABTC\",\"price\":\"0.000810372771\",\"type\":\"EXCHANGE LIMIT\"}"
+            `shouldBe` "{\"amount\":\"2.00200201\",\"flags\":4096,\"symbol\":\"tADABTC\",\"type\":\"EXCHANGE LIMIT\",\"price\":\"0.00081037\"}"
       x `shouldSatisfy` isRight

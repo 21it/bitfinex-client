@@ -17,7 +17,7 @@ data Method
   | RetrieveOrders
   | OrdersHistory
   | CancelOrderMulti
-  deriving (Show)
+  deriving stock (Show)
 
 data CurrencyRelation
   = Base

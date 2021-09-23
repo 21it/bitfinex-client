@@ -29,11 +29,12 @@ spec = before newEnv $ do
   it "feeSummary succeeds" $ \env -> do
     x <- runExceptT $ Bitfinex.feeSummary env
     x `shouldSatisfy` isRight
-  it "submitOrderMaker succeeds" $ \env -> do
+  it "submitOrderMaker and cancelOrderById succeeds" $ \env -> do
     x <- withAdaBtc $ \amt sym -> do
       rate <- Bitfinex.marketAveragePrice Buy amt sym
       let opts = SubmitOrder.optsPostOnly
-      Bitfinex.submitOrderMaker env Buy amt sym rate opts
+      order <- Bitfinex.submitOrderMaker env Buy amt sym rate opts
+      Bitfinex.cancelOrderById env $ orderId order
     x `shouldSatisfy` isRight
   it "retrieveOrders succeeds" $ \env -> do
     x <- withAdaBtc . const $ \sym ->
@@ -50,7 +51,7 @@ spec = before newEnv $ do
   it "getOrder fails" $ \env -> do
     x <- runExceptT $ Bitfinex.getOrder env $ OrderId 0
     x `shouldSatisfy` isLeft
-  it "submitCounterOrderMaker" $ \env -> do
+  it "submitCounterOrderMaker fails" $ \env -> do
     x <-
       runExceptT $ do
         rate <- except . newPosRat $ 1 % 1000
@@ -60,4 +61,4 @@ spec = before newEnv $ do
           (FeeRate rate)
           (ProfitRate rate)
           SubmitOrder.optsPostOnly
-    x `shouldSatisfy` isRight
+    x `shouldSatisfy` isLeft

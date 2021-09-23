@@ -13,11 +13,12 @@ data Request
   | ByOrderClientId (Set (OrderClientId, UTCTime))
   | ByOrderGroupId (Set OrderGroupId)
   | Everything
-  deriving (Eq, Ord, Show)
+  deriving stock (Eq, Ord, Show)
 
 instance ToJSON Request where
-  toJSON = eradicateNull . A.object . \case
-    ByOrderId xs -> ["id" A..= toJSON xs]
-    ByOrderClientId xs -> ["cid" A..= toJSON (second utctDay <$> toList xs)]
-    ByOrderGroupId xs -> ["gid" A..= toJSON xs]
-    Everything -> ["all" A..= toJSON (1 :: Int)]
+  toJSON =
+    eradicateNull . A.object . \case
+      ByOrderId xs -> ["id" A..= toJSON xs]
+      ByOrderClientId xs -> ["cid" A..= toJSON (second utctDay <$> toList xs)]
+      ByOrderGroupId xs -> ["gid" A..= toJSON xs]
+      Everything -> ["all" A..= toJSON (1 :: Int)]

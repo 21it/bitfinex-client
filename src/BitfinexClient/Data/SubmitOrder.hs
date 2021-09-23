@@ -11,23 +11,21 @@ where
 import BitfinexClient.Import
 import qualified Data.Aeson as A
 
-data Request
-  = Request
-      { action :: ExchangeAction,
-        amount :: MoneyAmount,
-        symbol :: CurrencyPair,
-        rate :: ExchangeRate,
-        options :: Options
-      }
-  deriving (Eq, Ord, Show)
+data Request = Request
+  { action :: ExchangeAction,
+    amount :: MoneyAmount,
+    symbol :: CurrencyPair,
+    rate :: ExchangeRate,
+    options :: Options
+  }
+  deriving stock (Eq, Ord, Show)
 
-data Options
-  = Options
-      { clientId :: Maybe OrderClientId,
-        groupId :: Maybe OrderGroupId,
-        flags :: Set OrderFlag
-      }
-  deriving (Eq, Ord, Show)
+data Options = Options
+  { clientId :: Maybe OrderClientId,
+    groupId :: Maybe OrderGroupId,
+    flags :: Set OrderFlag
+  }
+  deriving stock (Eq, Ord, Show)
 
 optsDef :: Options
 optsDef =

@@ -21,9 +21,6 @@ import Data.Time.Clock as X
     getCurrentTime,
     secondsToDiffTime,
   )
-import Data.Word as X (Word64)
-import GHC.Generics as X (Generic)
 import Network.HTTP.Client as X (HttpException (..))
 import Universum as X hiding (ByteString, catch)
-import Universum.Debug (traceShow, traceShowId)
 import UnliftIO as X (catch)

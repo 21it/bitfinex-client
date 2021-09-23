@@ -37,7 +37,7 @@ instance Prelude.Show ApiKey where
 data RequestMethod
   = GET
   | POST
-  deriving (Eq, Ord, Show)
+  deriving stock (Eq, Ord, Show)
 
 newtype BaseUrl
   = BaseUrl Text
@@ -55,8 +55,7 @@ instance Show RawResponse where
     where
       bs = BL.toStrict $ coerce x
 
-newtype Nonce
-  = Nonce {unNonce :: Natural}
+newtype Nonce = Nonce {unNonce :: Natural}
   deriving newtype (Eq, Ord, Show)
 
 newNonce :: MonadIO m => m Nonce

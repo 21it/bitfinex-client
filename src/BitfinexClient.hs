@@ -264,7 +264,7 @@ submitCounterOrder' ::
 submitCounterOrder' submit env id0 feeRate profRate opts = do
   order <- getOrder env id0
   let amtOrder = orderAmount order
-  let amtQuoteLoss = amtOrder * (coerce $ orderRate order)
+  let amtQuoteLoss = amtOrder * coerce (orderRate order)
   --
   -- TODO : improve math there, seems not 100% accurate
   --

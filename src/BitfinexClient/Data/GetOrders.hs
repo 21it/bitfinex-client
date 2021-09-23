@@ -11,12 +11,11 @@ where
 import BitfinexClient.Data.Type
 import BitfinexClient.Import
 
-data Options
-  = Options
-      { currencyPair :: Maybe CurrencyPair,
-        orderIds :: Set OrderId
-      }
-  deriving (Eq, Ord, Show)
+data Options = Options
+  { currencyPair :: Maybe CurrencyPair,
+    orderIds :: Set OrderId
+  }
+  deriving stock (Eq, Ord, Show)
 
 optsDef :: Options
 optsDef =
