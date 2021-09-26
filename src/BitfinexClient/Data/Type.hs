@@ -49,6 +49,7 @@ where
 import BitfinexClient.Class.ToRequestParam
 import BitfinexClient.Data.Kind
 import BitfinexClient.Import.External
+import Data.Aeson (withObject, (.:))
 import qualified Data.Text as T
 import qualified Network.HTTP.Client as Web
 
@@ -194,13 +195,21 @@ newRawAmt act amt =
 
 newtype CurrencyCode (a :: CurrencyRelation)
   = CurrencyCode Text
-  deriving newtype (Eq, Ord, Show, IsString)
+  deriving newtype (Eq, Ord, Show, IsString, FromJSON)
 
 data CurrencyPair = CurrencyPair
   { currencyPairBase :: CurrencyCode 'Base,
     currencyPairQuote :: CurrencyCode 'Quote
   }
   deriving stock (Eq, Ord, Show)
+
+instance FromJSON CurrencyPair where
+  parseJSON = withObject "CurrencyPair" $ \x0 -> do
+    base <- x0 .: "base"
+    quote <- x0 .: "quote"
+    case newCurrencyPair base quote of
+      Left x -> fail $ show x
+      Right x -> pure x
 
 instance ToRequestParam CurrencyPair where
   toTextParam x =

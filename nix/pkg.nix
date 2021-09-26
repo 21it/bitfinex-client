@@ -1,7 +1,7 @@
 { mkDerivation, aeson, base, base16-bytestring, bytestring
 , containers, cryptonite, envparse, hpack, hspec, http-client
-, http-client-tls, http-types, lens-aeson, memory, siggy-chardust
-, stdenv, text, time, transformers, universum, unliftio
+, http-client-tls, http-types, lens-aeson, lib, memory
+, siggy-chardust, text, time, transformers, universum, unliftio
 , unordered-containers, vector
 }:
 mkDerivation {
@@ -18,5 +18,5 @@ mkDerivation {
   testHaskellDepends = [ aeson base hspec time transformers ];
   prePatch = "hpack";
   homepage = "https://github.com/tkachuk-labs/bitfinex-client#readme";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }
