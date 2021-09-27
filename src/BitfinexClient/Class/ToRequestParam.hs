@@ -8,6 +8,7 @@ module BitfinexClient.Class.ToRequestParam
 where
 
 import BitfinexClient.Import.External
+import BitfinexClient.Util (fromRatio)
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 
@@ -30,6 +31,9 @@ instance HasResolution E8 where
 instance ToRequestParam Rational where
   toTextParam x =
     T.pack $ showFixed True (fromRational x :: Fixed E8)
+
+instance ToRequestParam (Ratio Natural) where
+  toTextParam x = toTextParam (fromRatio x :: Rational)
 
 unQueryParam :: SomeQueryParam -> (BS.ByteString, Maybe BS.ByteString)
 unQueryParam (SomeQueryParam name x) = (name, toQueryParam x)

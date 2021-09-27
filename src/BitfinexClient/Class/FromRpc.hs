@@ -12,7 +12,6 @@ import BitfinexClient.Data.Type
 import BitfinexClient.Data.Web
 import BitfinexClient.Import.External
 import BitfinexClient.Parser
-import BitfinexClient.Util
 import Data.Aeson.Lens
 
 class FromRpc (method :: Method) res where

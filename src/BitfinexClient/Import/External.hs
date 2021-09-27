@@ -24,3 +24,4 @@ import Data.Time.Clock as X
 import Network.HTTP.Client as X (HttpException (..))
 import Universum as X hiding (ByteString, catch)
 import UnliftIO as X (catch)
+import Witch as X (From, from)

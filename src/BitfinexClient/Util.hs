@@ -1,27 +1,17 @@
+{-# LANGUAGE TypeApplications #-}
 {-# OPTIONS_HADDOCK show-extensions #-}
 
 module BitfinexClient.Util
-  ( fromRpcError,
-    eradicateNull,
+  ( eradicateNull,
+    fromRatio,
+    mapRatio,
   )
 where
 
-import BitfinexClient.Data.Kind
-import BitfinexClient.Data.Type
-import BitfinexClient.Data.Web
 import BitfinexClient.Import.External
 import qualified Data.Aeson as A
 import qualified Data.HashMap.Strict as HS
 import qualified Data.Vector as V
-
-fromRpcError :: Method -> RawResponse -> Text -> Error
-fromRpcError method res err =
-  ErrorFromRpc $
-    show method
-      <> " FromRpc failed because "
-      <> err
-      <> " in "
-      <> show res
 
 eradicateNull :: A.Value -> A.Value
 eradicateNull = \case
@@ -33,3 +23,9 @@ eradicateNull = \case
       \case
         A.Null -> Nothing
         x -> Just $ eradicateNull x
+
+fromRatio :: forall a b. (From a b, Integral b) => Ratio a -> Ratio b
+fromRatio x = from @a @b (numerator x) % from @a @b (denominator x)
+
+mapRatio :: Integral b => (a -> b) -> Ratio a -> Ratio b
+mapRatio f x = f (numerator x) % f (denominator x)

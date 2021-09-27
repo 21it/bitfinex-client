@@ -43,14 +43,18 @@ module BitfinexClient.Data.Type
     subPosRat,
     bfxRoundPosRat,
     Error (..),
+    fromRpcError,
   )
 where
 
 import BitfinexClient.Class.ToRequestParam
 import BitfinexClient.Data.Kind
+import qualified BitfinexClient.Data.Web as Web
 import BitfinexClient.Import.External
+import BitfinexClient.Util (fromRatio, mapRatio)
 import Data.Aeson (withObject, (.:))
 import qualified Data.Text as T
+import GHC.Natural (naturalFromInteger)
 import qualified Network.HTTP.Client as Web
 
 -- $orders
@@ -191,7 +195,7 @@ newRawAmt act amt =
     Buy -> absAmt
     Sell -> (-1) * absAmt
   where
-    absAmt = abs . unPosRat $ coerce amt
+    absAmt = abs . fromRatio . unPosRat $ coerce amt
 
 newtype CurrencyCode (a :: CurrencyRelation)
   = CurrencyCode Text
@@ -245,24 +249,34 @@ newCurrencyPair' raw =
 -- $misc
 -- General utility data used elsewhere.
 
-newtype PosRat = PosRat {unPosRat :: Rational}
+newtype PosRat = PosRat {unPosRat :: Ratio Natural}
   deriving newtype (Eq, Ord, Show, Num, Fractional, ToRequestParam)
 
 newPosRat :: Rational -> Either Error PosRat
 newPosRat x
-  | x > 0 = Right $ PosRat x
+  | x > 0 = Right . PosRat $ mapRatio naturalFromInteger x
   | otherwise =
-    Left . ErrorSmartCon $ "PosRat should be positive, but got " <> show x
+    Left . ErrorSmartCon $
+      "PosRat should be positive, but got " <> show x
 
 subPosRat :: PosRat -> PosRat -> Either Error PosRat
-subPosRat x0 x1 = newPosRat (coerce x0 - coerce x1)
+subPosRat x0 x1
+  | x0 > x1 = Right $ x0 - x1
+  | otherwise =
+    Left . ErrorSmartCon $
+      "subPosRat result should be positive, but got "
+        <> show x0
+        <> " - "
+        <> show x1
 
 bfxRoundPosRat :: Coercible a PosRat => a -> a
 bfxRoundPosRat =
   coerce
     . PosRat
+    . mapRatio naturalFromInteger
     . sdRound 5
     . dpRound 8
+    . fromRatio
     . unPosRat
     . coerce
 
@@ -276,3 +290,12 @@ data Error
   | ErrorUnverifiedOrder (Order 'Local) (Order 'Remote)
   | ErrorOrderState (Order 'Remote)
   deriving stock (Show)
+
+fromRpcError :: Method -> Web.RawResponse -> Text -> Error
+fromRpcError method res err =
+  ErrorFromRpc $
+    show method
+      <> " FromRpc failed because "
+      <> err
+      <> " in "
+      <> show res
