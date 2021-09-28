@@ -27,7 +27,6 @@ module BitfinexClient.Data.Type
     newProfitRate,
     MoneyAmount (..),
     newMoneyAmount,
-    newRawAmt,
     CurrencyCode (..),
     CurrencyPair,
     currencyPairBase,
@@ -43,13 +42,11 @@ module BitfinexClient.Data.Type
     subPosRat,
     bfxRoundPosRat,
     Error (..),
-    fromRpcError,
   )
 where
 
 import BitfinexClient.Class.ToRequestParam
 import BitfinexClient.Data.Kind
-import qualified BitfinexClient.Data.Web as Web
 import BitfinexClient.Import.External
 import BitfinexClient.Util (fromRatio, mapRatio)
 import Data.Aeson (withObject, (.:))
@@ -186,16 +183,14 @@ newtype MoneyAmount = MoneyAmount {unMoneyAmount :: PosRat}
 newMoneyAmount :: Rational -> Either Error MoneyAmount
 newMoneyAmount = (MoneyAmount <$>) . newPosRat
 
---
--- TODO : remove me, implement ToRequestParam for (ExchangeAction, MoneyAmount)
---
-newRawAmt :: ExchangeAction -> MoneyAmount -> Rational
-newRawAmt act amt =
-  case act of
-    Buy -> absAmt
-    Sell -> (-1) * absAmt
-  where
-    absAmt = abs . fromRatio . unPosRat $ coerce amt
+instance ToRequestParam (ExchangeAction, MoneyAmount) where
+  toTextParam (act, amt) =
+    toTextParam $
+      case act of
+        Buy -> absAmt
+        Sell -> (-1) * absAmt
+    where
+      absAmt = abs . fromRatio . unPosRat $ coerce amt :: Rational
 
 newtype CurrencyCode (a :: CurrencyRelation)
   = CurrencyCode Text
@@ -280,22 +275,16 @@ bfxRoundPosRat =
     . unPosRat
     . coerce
 
+--
+-- TODO : implement Ord
+--
 data Error
   = ErrorWebException HttpException
   | ErrorWebPub Web.Request (Web.Response ByteString)
   | ErrorWebPrv ByteString Web.Request (Web.Response ByteString)
-  | ErrorFromRpc Text
+  | ErrorParser Web.Request (Web.Response ByteString) Text
   | ErrorSmartCon Text
   | ErrorMissingOrder OrderId
   | ErrorUnverifiedOrder (Order 'Local) (Order 'Remote)
   | ErrorOrderState (Order 'Remote)
   deriving stock (Show)
-
-fromRpcError :: Method -> Web.RawResponse -> Text -> Error
-fromRpcError method res err =
-  ErrorFromRpc $
-    show method
-      <> " FromRpc failed because "
-      <> err
-      <> " in "
-      <> show res

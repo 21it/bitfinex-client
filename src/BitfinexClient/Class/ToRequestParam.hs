@@ -12,9 +12,6 @@ import BitfinexClient.Util (fromRatio)
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 
---
--- TODO : rename ToRequestParam
---
 class ToRequestParam a where
   toTextParam :: a -> Text
   toQueryParam :: a -> Maybe BS.ByteString

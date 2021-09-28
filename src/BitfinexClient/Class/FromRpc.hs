@@ -15,17 +15,13 @@ import BitfinexClient.Parser
 import Data.Aeson.Lens
 
 class FromRpc (method :: Method) res where
-  fromRpc :: RawResponse -> Either Error res
+  fromRpc :: RawResponse -> Either Text res
 
 instance FromRpc 'CancelOrderMulti (Map OrderId (Order 'Remote)) where
-  fromRpc res@(RawResponse raw) = do
+  fromRpc (RawResponse raw) = do
     xs <-
       maybeToRight
-        ( fromRpcError
-            CancelOrderMulti
-            res
-            "Order Array is missing"
-        )
+        "Order Array is missing"
         $ raw ^? nth 4
     parseOrderMap xs
 
@@ -36,23 +32,24 @@ instance FromRpc 'OrdersHistory (Map OrderId (Order 'Remote)) where
   fromRpc (RawResponse raw) = parseOrderMap raw
 
 instance FromRpc 'SubmitOrder (Order 'Remote) where
-  fromRpc res@(RawResponse raw) = do
+  fromRpc (RawResponse raw) = do
     order <-
       maybeToRight
-        (fromRpcError SubmitOrder res "Order is missing")
+        "Order is missing"
         $ raw ^? nth 4 . nth 0
     parseOrder order
 
 instance FromRpc 'MarketAveragePrice ExchangeRate where
-  fromRpc res@(RawResponse raw) = do
+  fromRpc (RawResponse raw) = do
     x <-
       maybeToRight
-        (fromRpcError MarketAveragePrice res "ExchangeRate is missing")
+        "ExchangeRate is missing"
         (toRational <$> raw ^? nth 0 . _Number)
-    newExchangeRate x
+    first (const $ "ExchangeRate is invalid " <> show x) $
+      newExchangeRate x
 
 instance FromRpc 'FeeSummary FeeSummary.Response where
-  fromRpc res@(RawResponse raw) = do
+  fromRpc (RawResponse raw) = do
     x0 <- parse 0 0 newFeeRate "makerCrypto2CryptoFee"
     x1 <- parse 0 1 newFeeRate "makerCrypto2StableFee"
     x2 <- parse 0 2 newFeeRate "makerCrypto2FiatFee"
@@ -65,10 +62,9 @@ instance FromRpc 'FeeSummary FeeSummary.Response where
       FeeSummary.Response x0 x1 x2 x3 x4 x5 x6 x7
     where
       parse ix0 ix1 con field =
-        (con =<<)
-          . (toRational <$>)
-          . maybeToRight
-            ( fromRpcError FeeSummary res $
-                field <> " is missing"
-            )
+        ( first (const $ field <> " is invalid")
+            . con
+            . toRational
+        )
+          <=< maybeToRight (field <> " is missing")
           $ raw ^? nth 4 . nth ix0 . nth ix1 . _Number

@@ -11,44 +11,48 @@ import BitfinexClient.Import.External
 import Data.Aeson.Lens
 import qualified Data.Map as Map
 
-parseOrder :: (AsValue a, Show a) => a -> Either Error (Order b)
+parseOrder :: AsValue a => a -> Either Text (Order b)
 parseOrder x = do
   id0 <-
-    maybeToRight (failure "OrderId is missing") $
+    maybeToRight "OrderId is missing" $
       OrderId
         <$> x ^? nth 0 . _Integral
   gid <-
-    maybeToRight (failure "OrderGroupId is missing") $
+    maybeToRight "OrderGroupId is missing" $
       (Just . OrderGroupId <$> x ^? nth 1 . _Integral)
         <|> (Nothing <$ x ^? nth 1 . _Null)
   cid <-
-    maybeToRight (failure "OrderClientId is missing") $
+    maybeToRight "OrderClientId is missing" $
       (Just . OrderClientId <$> x ^? nth 2 . _Integral)
         <|> (Nothing <$ x ^? nth 2 . _Null)
   sym0 <-
-    maybeToRight (failure "Symbol is missing") $
+    maybeToRight "Symbol is missing" $
       x ^? nth 3 . _String
   sym <-
-    newCurrencyPair' sym0
+    first (const $ "Symbol is invalid " <> sym0) $
+      newCurrencyPair' sym0
   amt0 <-
-    maybeToRight (failure "OrderAmount is missing") $
+    maybeToRight "OrderAmount is missing" $
       toRational <$> x ^? nth 7 . _Number
   amt <-
-    newMoneyAmount $ abs amt0
+    first (const $ "OrderAmount is invalid " <> show amt0) $
+      newMoneyAmount $ abs amt0
   act <-
-    newExchangeAction amt0
+    first (const $ "OrderAmount is invalid " <> show amt0) $
+      newExchangeAction amt0
   ss0 <-
-    maybeToRight (failure "OrderStatus is missing") $
+    maybeToRight "OrderStatus is missing" $
       x ^? nth 13 . _String
   ss1 <-
-    first failure $
-      newOrderStatus ss0
+    newOrderStatus ss0
   price <-
     maybeToRight
-      (failure "ExchangeRate is missing")
+      "ExchangeRate is missing"
       $ x ^? nth 16 . _Number
   rate <-
-    newExchangeRate $ toRational price
+    first (const $ "ExchangeRate is invalid " <> show price)
+      . newExchangeRate
+      $ toRational price
   pure
     Order
       { orderId = id0,
@@ -60,15 +64,12 @@ parseOrder x = do
         orderRate = rate,
         orderStatus = ss1
       }
-  where
-    failure =
-      ErrorFromRpc . (<> " in " <> show x)
 
-parseOrderMap :: AsValue a => a -> Either Error (Map OrderId (Order b))
+parseOrderMap :: AsValue a => a -> Either Text (Map OrderId (Order b))
 parseOrderMap raw = do
   xs <-
     maybeToRight
-      (ErrorFromRpc "Json is not an Array")
+      "Json is not an Array"
       $ raw ^? _Array
   foldrM parser mempty xs
   where

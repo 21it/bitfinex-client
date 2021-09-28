@@ -40,7 +40,7 @@ marketAveragePrice ::
 marketAveragePrice act amt sym =
   Generic.pub
     (Generic.Rpc :: Generic.Rpc 'MarketAveragePrice)
-    [ SomeQueryParam "amount" $ newRawAmt act amt,
+    [ SomeQueryParam "amount" (act, amt),
       SomeQueryParam "symbol" sym
     ]
     MarketAveragePrice.Request

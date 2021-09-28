@@ -54,7 +54,7 @@ instance ToJSON Request where
           "type"
             A..= ("EXCHANGE LIMIT" :: Text),
           "amount"
-            A..= toTextParam (newRawAmt (action req) $ amount req),
+            A..= toTextParam (action req, amount req),
           "symbol"
             A..= toTextParam (symbol req),
           "price"
